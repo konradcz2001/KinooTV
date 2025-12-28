@@ -13,7 +13,7 @@
 * **🔍 Wyszukiwanie Głosowe:** Oprócz normalnego wyszukiwania tekstowego dostępna jest integracja z systemowym mikrofonem pilota do szybkiego wyszukiwania filmów i seriali.
 * **🎥 Zwiastuny YouTube:** Możliwość bezpośredniego podglądu zwiastunów (trailerów) filmów i seriali wewnątrz aplikacji.
 * **🖱️ Virtual Cursor:** Unikalny system wirtualnego kursora do obsługi trudnych elementów webowych (np. logowania CAPTCHA).
-* **☁ Cloud Synchronizacja:** Lista obserwowanych synchronizowana w czasie rzeczywistym między urządzeniami dzięki **Firebase Realtime Database** (możliwość współpracy np. z rozszerzeniem do przeglądarki).
+* **☁ Cloud Synchronizacja:** Lista obserwowanych synchronizowana w czasie rzeczywistym między urządzeniami dzięki **Firebase Realtime Database** (możliwość współpracy z [rozszerzeniem do przeglądarki](https://github.com/konradcz2001/KinooTV-Extention)).
 * **🤖 Smart Scraping:** Automatyczne pobieranie metadanych, plakatów, ocen i opisów bezpośrednio ze strony źródłowej.
 * **⏯️ Player Links:** Agregacja i sortowanie linków wideo (priorytetyzacja: Dubbing PL > Lektor > Napisy).
 * **🌐 Odtwarzanie bez reklam:** Linki przekierowują do zewnętrznej przeglądarki. Dla najlepszych wrażeń zaleca się instalację przeglądarki z funkcją **wykrywania i przechwytywania wideo** (co eliminuje reklamy i pozwala używać natywnego odtwarzacza). Polecane rozwiązanie: **[browser-app.com](https://browser-app.com)**.
@@ -21,35 +21,35 @@
 
 ## 📸 Screenshots
 
-#### <center>Ekran logowania</center>
+#### <div align="center">Ekran logowania</div>
 
 Po przytrzymaniu przycisku wejścia na pilocie pojawia się kursor, którym trzeba potwierdzić CAPCHA. Login i hasło są autouzupełniane. Czynność tą wykonujemy raz, aż do momentu wygaśnięcia sesji i konieczności ponownego logowania.
 
 ![Ekran logowania](readme_assets/login.png)
 
-#### <center>Strona główna</center>
+#### <div align="center">Strona główna</div>
 
 ![Strona główna](readme_assets/home.png)
 
-#### <center>Obserwowane</center>
+#### <div align="center">Obserwowane</div>
 
 ![Obserwowane](readme_assets/watchlist.png)
 
-#### <center>Filtry</center>
+#### <div align="center">Filtry</div>
 
 ![Filtry](readme_assets/categories.png)
 
-#### <center>Wyszukiwanie głosowe</center>
+#### <div align="center">Wyszukiwanie głosowe</div>
 
 ![Wyszukiwanie głosowe](readme_assets/voicesearch.png)
 
-#### <center>Strona filmu</center>
+#### <div align="center">Strona filmu</div>
 
 ![Strona filmu](readme_assets/details.png)
 
 ![Strona filmu](readme_assets/details2.png)
 
-#### <center>Strona serialu</center>
+#### <div align="center">Strona serialu</div>
 
 ![Strona serialu](readme_assets/seasons.png)
 
