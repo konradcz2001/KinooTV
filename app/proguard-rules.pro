@@ -19,3 +19,6 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# Fix for Jsoup optional dependency (re2j) missing in R8 build
+-dontwarn com.google.re2j.**
