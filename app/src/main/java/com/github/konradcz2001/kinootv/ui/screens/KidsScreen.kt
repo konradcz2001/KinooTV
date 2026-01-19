@@ -32,11 +32,13 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.Text
 import com.github.konradcz2001.kinootv.MainActivity
+import com.github.konradcz2001.kinootv.R
 import com.github.konradcz2001.kinootv.data.Movie
 import com.github.konradcz2001.kinootv.data.MovieScraper
 import com.github.konradcz2001.kinootv.ui.components.MovieCard
@@ -121,7 +123,7 @@ fun KidsScreen() {
                 CircularProgressIndicator(color = Color.Red)
             }
         } else if (movies.isEmpty()) {
-            Box(modifier = Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.Center) { Text("Nie znaleziono bajek", color = Color.Gray) }
+            Box(modifier = Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.Center) { Text(stringResource(R.string.no_kids_found), color = Color.Gray) }
         } else {
             CompositionLocalProvider(LocalBringIntoViewSpec provides bringIntoViewSpec) {
                 LazyVerticalGrid(
@@ -145,9 +147,9 @@ fun KidsScreen() {
         }
         if (maxPage > 1) {
             Row(modifier = Modifier.fillMaxWidth().padding(16.dp), horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
-                if (currentPage > 1) { PaginationButton("<< 1") { currentPage = 1 }; PaginationButton("< Poprzedni") { currentPage-- } }
-                Text(" Strona $currentPage of $maxPage ", color = Color.LightGray, modifier = Modifier.padding(horizontal = 16.dp), fontWeight = FontWeight.Bold)
-                if (currentPage < maxPage) { PaginationButton("Następny >") { currentPage++ }; PaginationButton("$maxPage >>") { currentPage = maxPage } }
+                if (currentPage > 1) { PaginationButton(stringResource(R.string.pagination_first)) { currentPage = 1 }; PaginationButton(stringResource(R.string.pagination_prev)) { currentPage-- } }
+                Text(stringResource(R.string.pagination_page_format, currentPage, maxPage), color = Color.LightGray, modifier = Modifier.padding(horizontal = 16.dp), fontWeight = FontWeight.Bold)
+                if (currentPage < maxPage) { PaginationButton(stringResource(R.string.pagination_next)) { currentPage++ }; PaginationButton(stringResource(R.string.pagination_last, maxPage)) { currentPage = maxPage } }
             }
         }
     }

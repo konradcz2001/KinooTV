@@ -3,8 +3,10 @@ package com.github.konradcz2001.kinootv.data
 import android.content.Context
 import android.util.Log
 import androidx.core.content.edit
+import com.github.konradcz2001.kinootv.R
 import com.github.konradcz2001.kinootv.utils.AppConstants
 import com.github.konradcz2001.kinootv.utils.SessionExpiredException
+import com.github.konradcz2001.kinootv.utils.parseAndLocalizeDate
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.jsoup.Jsoup
@@ -33,6 +35,10 @@ data class FilteredResult(
 class MovieScraper(private val context: Context) {
 
     private val client = OkHttpClient()
+
+    // Parsing constants - these match the source website HTML and should not be translated
+    private val PARSE_ADDED_SEPARATOR = " dodane "
+    private val PARSE_BY_USER_MARKER = "przez"
 
     // Headers identifying sections on the main page
     private val ROW_TITLES = listOf("FILMY NA CZASIE", "FILMY NA TOPIE", "SERIALE NA CZASIE")
@@ -92,10 +98,7 @@ class MovieScraper(private val context: Context) {
     }
 
     /**
-     * Searches YouTube for a trailer ID based on a query string (usually Title + Year).
-     *
-     * @param query The search query.
-     * @return The YouTube video ID string, or null if not found.
+     * Searches YouTube for a trailer ID based on a query string.
      */
     fun getYouTubeTrailerId(query: String): String? {
         try {
@@ -355,9 +358,9 @@ class MovieScraper(private val context: Context) {
             val doc = Jsoup.parse(html)
             checkSession(doc)
             val title = doc.select("h1 span[itemprop='title']").text().ifEmpty {
-                doc.select("#item-headline h2").text().ifEmpty { "No title" }
+                doc.select("#item-headline h2").text().ifEmpty { context.getString(R.string.fallback_no_title) }
             }
-            val description = doc.select("p.description").first()?.text() ?: "No description"
+            val description = doc.select("p.description").first()?.text() ?: context.getString(R.string.fallback_no_desc)
             val posterUrl = doc.select("#single-poster img").attr("src")
             val backgroundStyle = doc.select("#item-headline").attr("style")
             val pattern = Pattern.compile("url\\((.*?)\\)")
@@ -385,7 +388,7 @@ class MovieScraper(private val context: Context) {
             val isSeries = episodeListRoot.isNotEmpty()
             if (isSeries) {
                 for (seasonLi in episodeListRoot) {
-                    val seasonName = seasonLi.selectFirst("span")?.text() ?: "Season"
+                    val seasonName = seasonLi.selectFirst("span")?.text() ?: context.getString(R.string.fallback_season_default)
                     val episodes = mutableListOf<Episode>()
                     val epLinks = seasonLi.select("ul li a")
                     for (epLink in epLinks) episodes.add(Episode(epLink.text(), epLink.attr("href")))
@@ -468,7 +471,6 @@ class MovieScraper(private val context: Context) {
         // Use user agent from preferences if available (synced from WebView), otherwise use default from constants
         val userAgent = prefs.getString(AppConstants.USER_AGENT_KEY, AppConstants.DEFAULT_USER_AGENT)
             ?: AppConstants.DEFAULT_USER_AGENT
-
         val request = Request.Builder().url(url).addHeader("Cookie", cookie).addHeader("User-Agent", userAgent).build()
         return Pair(request, userAgent)
     }
@@ -485,23 +487,24 @@ class MovieScraper(private val context: Context) {
             if (linkElement != null) {
                 // Raw text example: "voe.sx dodane 10 godzin temu przez KtosTam"
                 val rawText = linkElement.text()
-
-                // Split host name from added date
-                val parts = rawText.split(" dodane ")
+                // Use constants for parsing markers
+                val parts = rawText.split(PARSE_ADDED_SEPARATOR)
                 val hostName = parts.getOrNull(0)?.trim() ?: rawText
                 var addedDate = parts.getOrNull(1)?.trim() ?: ""
 
-                // Remove user information "przez Użytkownik"
-                if (addedDate.contains("przez")) {
-                    addedDate = addedDate.split("przez")[0].trim()
+                if (addedDate.contains(PARSE_BY_USER_MARKER)) {
+                    addedDate = addedDate.split(PARSE_BY_USER_MARKER)[0].trim()
                 }
 
+                // Localize the extracted date string (e.g. "10 godzin temu" -> Localized format)
+                val localizedDate = parseAndLocalizeDate(addedDate, context)
+
                 val dataIframe = linkElement.attr("data-iframe")
-                val version = row.select("td").getOrNull(1)?.text()?.trim() ?: "Inne"
+                val version = row.select("td").getOrNull(1)?.text()?.trim() ?: context.getString(R.string.fallback_version_other)
                 val quality = row.select("td").getOrNull(2)?.text()?.trim() ?: ""
 
                 if(dataIframe.isNotEmpty()) {
-                    playerLinks.add(PlayerLink(hostName, dataIframe, quality, version, addedDate))
+                    playerLinks.add(PlayerLink(hostName, dataIframe, quality, version, localizedDate))
                 }
             }
         }
@@ -533,14 +536,19 @@ class MovieScraper(private val context: Context) {
         cleanElement.select(".modal").remove()
 
         val author = cleanElement.select("h5 b").text()
-        val date = cleanElement.select("h5 sup.pull-right").text()
+
+        // Extract the raw date (e.g., "5 minut temu")
+        val rawDate = cleanElement.select("h5 sup.pull-right").text()
+        // Convert to localized string resource
+        val localizedDate = parseAndLocalizeDate(rawDate, context)
+
         var text = cleanElement.select("p").text().trim()
 
         text = text.replace("Zawartosc tego komentarza moze zawierac spoiler", "")
         text = text.replace("Pokaz ukryta zawartosc", "").trim()
 
         if (author.isNotEmpty() && text.isNotEmpty()) {
-            targetList.add(Comment(author, date, text, depth))
+            targetList.add(Comment(author, localizedDate, text, depth))
         }
 
         // Process children

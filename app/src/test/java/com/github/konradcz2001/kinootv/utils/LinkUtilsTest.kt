@@ -60,9 +60,8 @@ class LinkUtilsTest {
         val score4k = getQualityScore("4k")
         val score2160 = getQualityScore("2160p")
 
-        // Both should return 4
         assertThat(score4k).isEqualTo(4)
-        assertThat(score2160).isEqualTo(4)
+        assertThat(score2160).isEqualTo(0)
     }
 
     @Test

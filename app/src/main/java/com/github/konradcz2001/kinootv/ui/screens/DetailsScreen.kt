@@ -47,6 +47,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -61,6 +62,7 @@ import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import coil.compose.AsyncImage
 import com.github.konradcz2001.kinootv.EpisodeActivity
+import com.github.konradcz2001.kinootv.R
 import com.github.konradcz2001.kinootv.data.Movie
 import com.github.konradcz2001.kinootv.data.MovieDetails
 import com.github.konradcz2001.kinootv.data.MovieScraper
@@ -68,6 +70,7 @@ import com.github.konradcz2001.kinootv.ui.components.CommentView
 import com.github.konradcz2001.kinootv.ui.components.PlayerLinkButton
 import com.github.konradcz2001.kinootv.ui.components.YouTubePlayerDialog
 import com.github.konradcz2001.kinootv.utils.WatchlistManager
+import com.github.konradcz2001.kinootv.utils.getLocalizedVersionName
 import com.github.konradcz2001.kinootv.utils.sortLinks
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -100,6 +103,10 @@ fun DetailsScreen(pageUrl: String, scope: CoroutineScope) {
     val watchlist by WatchlistManager.watchlistFlow.collectAsState()
     val isWatched = watchlist.any { it.moviePageUrl == pageUrl }
 
+    val errorDataFetch = stringResource(R.string.error_data_fetch)
+    val trailerNotFound = stringResource(R.string.trailer_not_found)
+    val trailerFetchError = stringResource(R.string.trailer_fetch_error)
+
     LaunchedEffect(Unit) {
         try {
             scope.launch(Dispatchers.IO) {
@@ -108,7 +115,7 @@ fun DetailsScreen(pageUrl: String, scope: CoroutineScope) {
                 withContext(Dispatchers.Main) {
                     details = fetchedDetails
                     if (fetchedDetails == null) {
-                        Toast.makeText(context, "Błąd pobierania danych", Toast.LENGTH_LONG).show()
+                        Toast.makeText(context, errorDataFetch, Toast.LENGTH_LONG).show()
                     }
                 }
             }
@@ -126,9 +133,7 @@ fun DetailsScreen(pageUrl: String, scope: CoroutineScope) {
 
     // Handle Back press when trailer is open
     if (trailerVideoId != null) {
-        BackHandler {
-            trailerVideoId = null
-        }
+        BackHandler { trailerVideoId = null }
     }
 
     val currentDetails = details
@@ -171,11 +176,7 @@ fun DetailsScreen(pageUrl: String, scope: CoroutineScope) {
                                             // Clean title for better YouTube search results
                                             val rawTitle = currentDetails.title
                                             val slashCount = rawTitle.count { it == '/' }
-                                            val queryTitle = if (slashCount == 1) {
-                                                rawTitle.split("/")[1].trim()
-                                            } else {
-                                                rawTitle.trim()
-                                            }
+                                            val queryTitle = if (slashCount == 1) rawTitle.split("/")[1].trim() else rawTitle.trim()
                                             val query = "$queryTitle trailer ${currentDetails.year}"
                                             val scraper = MovieScraper(context)
                                             val videoId = scraper.getYouTubeTrailerId(query)
@@ -185,13 +186,13 @@ fun DetailsScreen(pageUrl: String, scope: CoroutineScope) {
                                                 if (videoId != null && videoId.isNotEmpty()) {
                                                     trailerVideoId = videoId
                                                 } else {
-                                                    Toast.makeText(context, "Nie znaleziono zwiastuna", Toast.LENGTH_SHORT).show()
+                                                    Toast.makeText(context, trailerNotFound, Toast.LENGTH_SHORT).show()
                                                 }
                                             }
                                         } catch (_: Exception) {
                                             withContext(Dispatchers.Main) {
                                                 isTrailerLoading = false
-                                                Toast.makeText(context, "Błąd pobierania zwiastuna", Toast.LENGTH_SHORT).show()
+                                                Toast.makeText(context, trailerFetchError, Toast.LENGTH_SHORT).show()
                                             }
                                         }
                                     }
@@ -213,77 +214,40 @@ fun DetailsScreen(pageUrl: String, scope: CoroutineScope) {
                                 modifier = Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.3f)),
                                 contentAlignment = Alignment.Center
                             ) {
-                                Icon(
-                                    imageVector = Icons.Default.PlayArrow,
-                                    contentDescription = null,
-                                    tint = Color.White.copy(alpha = 0.8f),
-                                    modifier = Modifier.size(48.dp)
-                                )
+                                Icon(imageVector = Icons.Default.PlayArrow, contentDescription = null, tint = Color.White.copy(alpha = 0.8f), modifier = Modifier.size(48.dp))
                             }
                         }
-
-                        if (isTrailerLoading) {
-                            CircularProgressIndicator(color = Color.Red, modifier = Modifier.size(40.dp))
-                        }
+                        if (isTrailerLoading) CircularProgressIndicator(color = Color.Red, modifier = Modifier.size(40.dp))
                     }
 
                     Spacer(modifier = Modifier.height(12.dp))
                     Text(
-                        text = if (isTrailerLoading) "Szukanie zwiastuna..." else "Kliknij aby odtworzyć zwiastun",
+                        text = if (isTrailerLoading) stringResource(R.string.trailer_searching) else stringResource(R.string.trailer_play_hint),
                         style = MaterialTheme.typography.labelSmall,
                         color = Color.Gray,
                         modifier = Modifier.align(Alignment.CenterHorizontally)
                     )
 
                     Spacer(modifier = Modifier.height(16.dp))
-                    Text(
-                        text = "★ ${currentDetails.rating}",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Medium,
-                        color = Color(0xFFB0B0B0),
-                        modifier = Modifier.align(Alignment.CenterHorizontally)
-                    )
-
+                    Text(text = "★ ${currentDetails.rating}", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Medium, color = Color(0xFFB0B0B0), modifier = Modifier.align(Alignment.CenterHorizontally))
                     Spacer(modifier = Modifier.height(24.dp))
 
                     // WATCHLIST TOGGLE BUTTON
                     Button(
                         onClick = {
-                            if (isWatched) {
-                                WatchlistManager.removeFromWatchlist(pageUrl)
-                            } else {
-                                val movieToSave = Movie(
-                                    title = currentDetails.title,
-                                    description = currentDetails.description,
-                                    imageUrl = currentDetails.posterUrl,
-                                    moviePageUrl = pageUrl,
-                                    year = currentDetails.year,
-                                    rating = currentDetails.rating,
-                                    views = currentDetails.views,
-                                    qualityLabel = null,
-                                    isSeries = currentDetails.isSeries
-                                )
-                                WatchlistManager.addToWatchlist(movieToSave)
-                            }
+                            if (isWatched) WatchlistManager.removeFromWatchlist(pageUrl)
+                            else WatchlistManager.addToWatchlist(Movie(currentDetails.title, currentDetails.description, currentDetails.posterUrl, pageUrl, currentDetails.year, currentDetails.rating, currentDetails.views, null, currentDetails.isSeries))
                         },
                         colors = ButtonDefaults.colors(
                             containerColor = if (isWatched) Color(0xFFE50914) else Color(0xFF333333),
-                            contentColor = Color.White,
-                            focusedContainerColor = if (isWatched) Color(0xFFE50914) else Color(0xFF333333),
-                            focusedContentColor = Color.White
+                            contentColor = Color.White
                         ),
-                        border = ButtonDefaults.border(
-                            focusedBorder = Border(border = BorderStroke(2.dp, Color.White))
-                        ),
+                        border = ButtonDefaults.border(focusedBorder = Border(border = BorderStroke(2.dp, Color.White))),
                         contentPadding = PaddingValues(horizontal = 20.dp, vertical = 10.dp),
                         modifier = Modifier.align(Alignment.CenterHorizontally)
                     ) {
-                        Text(
-                            text = if (isWatched) "Obserwuję" else "Obserwuj",
-                            fontWeight = FontWeight.SemiBold
-                        )
+                        Text(text = if (isWatched) stringResource(R.string.watchlist_added) else stringResource(R.string.watchlist_add), fontWeight = FontWeight.SemiBold)
                     }
-
                     Spacer(modifier = Modifier.height(60.dp))
                 }
 
@@ -291,23 +255,13 @@ fun DetailsScreen(pageUrl: String, scope: CoroutineScope) {
 
                 // RIGHT COLUMN (Details & Episodes)
                 Column(
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxHeight()
-                        .zIndex(0f)
-                        .verticalScroll(rememberScrollState())
+                    modifier = Modifier.weight(1f).fillMaxHeight().zIndex(0f).verticalScroll(rememberScrollState())
                 ) {
                     Box(modifier = Modifier.focusRequester(titleFocusRequester).focusable().padding(4.dp)) {
-                        Text(
-                            text = currentDetails.title,
-                            style = MaterialTheme.typography.displaySmall,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White
-                        )
+                        Text(text = currentDetails.title, style = MaterialTheme.typography.displaySmall, fontWeight = FontWeight.Bold, color = Color.White)
                     }
 
                     Spacer(modifier = Modifier.height(12.dp))
-
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(text = currentDetails.year, color = Color.LightGray)
                         if (currentDetails.countries.isNotEmpty()) {
@@ -316,37 +270,31 @@ fun DetailsScreen(pageUrl: String, scope: CoroutineScope) {
                         }
                         if (currentDetails.views.isNotEmpty()) {
                             Spacer(modifier = Modifier.width(16.dp))
-                            Text(text = "Wyświetlenia: ${currentDetails.views}", color = Color.Gray, fontSize = 12.sp)
+                            Text(text = stringResource(R.string.views_format, currentDetails.views), color = Color.Gray, fontSize = 12.sp)
                         }
                     }
 
                     if (currentDetails.genres.isNotEmpty()) {
                         Spacer(modifier = Modifier.height(8.dp))
-                        Text(
-                            text = "Gatunki: ${currentDetails.genres.joinToString(", ")}",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = Color.Gray
-                        )
+                        Text(text = stringResource(R.string.genres_format, currentDetails.genres.joinToString(", ")), style = MaterialTheme.typography.bodyMedium, color = Color.Gray)
                     }
 
                     Spacer(modifier = Modifier.height(16.dp))
-                    Text(
-                        text = currentDetails.description,
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = Color(0xFFAAAAAA)
-                    )
-
+                    Text(text = currentDetails.description, style = MaterialTheme.typography.bodyLarge, color = Color(0xFFAAAAAA))
                     Spacer(modifier = Modifier.height(24.dp))
 
                     if (currentDetails.isSeries) {
-                        Text(text = "Sezony", style = MaterialTheme.typography.headlineSmall, color = Color.White)
+                        Text(text = stringResource(R.string.seasons_header), style = MaterialTheme.typography.headlineSmall, color = Color.White)
                         Spacer(modifier = Modifier.height(8.dp))
                         val seasonRowRequester = remember { FocusRequester() }
 
                         LazyRow(
                             horizontalArrangement = Arrangement.spacedBy(12.dp),
                             contentPadding = PaddingValues(horizontal = 24.dp, vertical = 8.dp),
-                            modifier = Modifier.focusProperties { enter = { seasonRowRequester } }
+                            modifier = Modifier.focusProperties {
+                                @Suppress("DEPRECATION")
+                                enter = { seasonRowRequester }
+                            }
                         ) {
                             itemsIndexed(currentDetails.seasons) { index, season ->
                                 Button(
@@ -365,13 +313,8 @@ fun DetailsScreen(pageUrl: String, scope: CoroutineScope) {
                         Spacer(modifier = Modifier.height(24.dp))
 
                         if (selectedSeason != null) {
-                            Text(
-                                text = "Odcinki: ${selectedSeason!!.title}",
-                                style = MaterialTheme.typography.titleMedium,
-                                color = Color(0xFFCCCCCC)
-                            )
+                            Text(text = stringResource(R.string.episodes_format, selectedSeason!!.title), style = MaterialTheme.typography.titleMedium, color = Color(0xFFCCCCCC))
                             Spacer(modifier = Modifier.height(8.dp))
-
                             selectedSeason!!.episodes.forEach { episode ->
                                 Button(
                                     onClick = {
@@ -391,12 +334,14 @@ fun DetailsScreen(pageUrl: String, scope: CoroutineScope) {
                         val groupedLinks = sortedLinks.groupBy { it.version }
 
                         if (groupedLinks.isNotEmpty()) {
-                            Text(text = "Odtwarzacze", style = MaterialTheme.typography.headlineSmall, color = Color.White)
+                            Text(text = stringResource(R.string.players_header), style = MaterialTheme.typography.headlineSmall, color = Color.White)
                             Spacer(modifier = Modifier.height(8.dp))
 
                             groupedLinks.forEach { (versionName, links) ->
+                                // Use mapped version name here
+                                val displayVersion = getLocalizedVersionName(versionName, context)
                                 Text(
-                                    text = versionName,
+                                    text = displayVersion,
                                     style = MaterialTheme.typography.titleSmall,
                                     color = Color(0xFFBCAAA4),
                                     modifier = Modifier.padding(top = 12.dp, bottom = 4.dp)
@@ -405,7 +350,10 @@ fun DetailsScreen(pageUrl: String, scope: CoroutineScope) {
                                 LazyRow(
                                     horizontalArrangement = Arrangement.spacedBy(16.dp),
                                     contentPadding = PaddingValues(horizontal = 24.dp, vertical = 16.dp),
-                                    modifier = Modifier.focusProperties { enter = { rowRequester } }
+                                    modifier = Modifier.focusProperties {
+                                        @Suppress("DEPRECATION")
+                                        enter = { rowRequester }
+                                    }
                                 ) {
                                     itemsIndexed(links) { index, link ->
                                         PlayerLinkButton(
@@ -416,17 +364,16 @@ fun DetailsScreen(pageUrl: String, scope: CoroutineScope) {
                                 }
                             }
                         } else {
-                            Text("Brak dostępnych odtwarzaczy", color = Color.Gray)
+                            Text(stringResource(R.string.no_players), color = Color.Gray)
                         }
                     }
 
                     Spacer(modifier = Modifier.height(24.dp))
-
-                    Text(text = "Komentarze", style = MaterialTheme.typography.headlineSmall, color = Color.White)
+                    Text(text = stringResource(R.string.comments_header), style = MaterialTheme.typography.headlineSmall, color = Color.White)
                     Spacer(modifier = Modifier.height(8.dp))
 
                     if (currentDetails.comments.isEmpty()) {
-                        Text("Brak komentarzy", color = Color.Gray)
+                        Text(stringResource(R.string.no_comments), color = Color.Gray)
                     } else {
                         currentDetails.comments.forEach { comment ->
                             CommentView(comment = comment)
@@ -436,13 +383,8 @@ fun DetailsScreen(pageUrl: String, scope: CoroutineScope) {
                 }
             }
         }
-
-        // --- YOUTUBE DIALOG ---
         if (trailerVideoId != null) {
-            YouTubePlayerDialog(
-                videoId = trailerVideoId!!,
-                onDismiss = { trailerVideoId = null }
-            )
+            YouTubePlayerDialog(videoId = trailerVideoId!!, onDismiss = { trailerVideoId = null })
         }
     }
 }

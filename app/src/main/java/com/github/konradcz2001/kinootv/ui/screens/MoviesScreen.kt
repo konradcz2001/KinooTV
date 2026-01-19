@@ -35,11 +35,13 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.Text
 import com.github.konradcz2001.kinootv.MainActivity
+import com.github.konradcz2001.kinootv.R
 import com.github.konradcz2001.kinootv.data.Movie
 import com.github.konradcz2001.kinootv.data.MovieScraper
 import com.github.konradcz2001.kinootv.ui.components.FilterButton
@@ -54,20 +56,48 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.Calendar
 
-/**
- * A screen that displays a browsable grid of movies.
- * Features include pagination, sorting options, category filtering, and year range filtering.
- * It also handles session expiration gracefully by redirecting to the main activity.
- */
 @OptIn(ExperimentalTvMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun MoviesScreen() {
     val context = LocalContext.current
-    var selectedSort by remember { mutableStateOf("Nowe Linki") }
-    var selectedCategory by remember { mutableStateOf("Wszystkie") }
+
+    // Internal keys (used for scraper logic)
+    var selectedSortKey by remember { mutableStateOf("Nowe Linki") }
+    var selectedCategoryKey by remember { mutableStateOf("Wszystkie") }
+
+    // Display labels
     var selectedYearFrom by remember { mutableStateOf("") }
     var selectedYearTo by remember { mutableStateOf("") }
-    var selectedYearLabel by remember { mutableStateOf("Wszystkie") }
+    val allLabel = stringResource(R.string.filter_all)
+    var selectedYearLabel by remember { mutableStateOf(allLabel) }
+
+    // --- MAPPING LOGIC ---
+    val sortMap = mapOf(
+        "Nowe Linki" to stringResource(R.string.sort_new_links),
+        "Liczba Głosów" to stringResource(R.string.sort_votes),
+        "Premiera" to stringResource(R.string.sort_premiere),
+        "Odsłony" to stringResource(R.string.sort_views),
+        "Ocena" to stringResource(R.string.sort_rate),
+        "Ocena Filmweb" to stringResource(R.string.sort_filmweb)
+    )
+
+    val categoryMap = mapOf(
+        "Wszystkie" to stringResource(R.string.filter_all),
+        "Akcja" to stringResource(R.string.cat_action),
+        "Animacja" to stringResource(R.string.cat_animation),
+        "Czarna Komedia" to stringResource(R.string.cat_black_comedy),
+        "Dla Młodzieży" to stringResource(R.string.cat_youth),
+        "Erotyczny" to stringResource(R.string.cat_erotic),
+        "Familijny" to stringResource(R.string.cat_family),
+        "Horror" to stringResource(R.string.cat_horror),
+        "Komedia" to stringResource(R.string.cat_comedy),
+        "Sci-Fi" to stringResource(R.string.cat_scifi),
+        "Thriller" to stringResource(R.string.cat_thriller)
+    )
+
+    // Helper to get display name from key
+    val getSortDisplay = { key: String -> sortMap[key] ?: key }
+    val getCategoryDisplay = { key: String -> categoryMap[key] ?: key }
 
     var movies by remember { mutableStateOf<List<Movie>>(emptyList()) }
     var maxPage by remember { mutableIntStateOf(1) }
@@ -91,14 +121,14 @@ fun MoviesScreen() {
         }
     }
 
-    LaunchedEffect(currentPage, selectedSort, selectedCategory, selectedYearFrom, selectedYearTo) {
+    LaunchedEffect(currentPage, selectedSortKey, selectedCategoryKey, selectedYearFrom, selectedYearTo) {
         isLoading = true
         launch(Dispatchers.IO) {
             try {
                 val scraper = MovieScraper(context)
                 val result = scraper.fetchFilteredMovies(
-                    category = selectedCategory,
-                    sort = selectedSort,
+                    category = selectedCategoryKey, // Send internal key
+                    sort = selectedSortKey,         // Send internal key
                     yearFrom = selectedYearFrom.toIntOrNull(),
                     yearTo = selectedYearTo.toIntOrNull(),
                     page = currentPage
@@ -140,11 +170,11 @@ fun MoviesScreen() {
                     .focusProperties { down = firstItemRequester },
                 horizontalArrangement = Arrangement.Center
             ) {
-                FilterButton("Sortowanie: $selectedSort") { showSortDialog = true }
+                FilterButton(stringResource(R.string.sort_label_format, getSortDisplay(selectedSortKey))) { showSortDialog = true }
                 Spacer(modifier = Modifier.width(16.dp))
-                FilterButton("Kategoria: $selectedCategory") { showCategoryDialog = true }
+                FilterButton(stringResource(R.string.category_label_format, getCategoryDisplay(selectedCategoryKey))) { showCategoryDialog = true }
                 Spacer(modifier = Modifier.width(16.dp))
-                FilterButton("Rok: $selectedYearLabel") { showYearDialog = true }
+                FilterButton(stringResource(R.string.year_label_format, selectedYearLabel)) { showYearDialog = true }
             }
         }
         if (isLoading) {
@@ -152,7 +182,7 @@ fun MoviesScreen() {
                 CircularProgressIndicator(color = Color.Red)
             }
         } else if (movies.isEmpty()) {
-            Box(modifier = Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.Center) { Text("Nie znaleziono filmów", color = Color.Gray) }
+            Box(modifier = Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.Center) { Text(stringResource(R.string.no_movies_found), color = Color.Gray) }
         } else {
             CompositionLocalProvider(LocalBringIntoViewSpec provides bringIntoViewSpec) {
                 LazyVerticalGrid(
@@ -176,27 +206,42 @@ fun MoviesScreen() {
         }
         if (maxPage > 1) {
             Row(modifier = Modifier.fillMaxWidth().padding(16.dp), horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
-                if (currentPage > 1) { PaginationButton("<< 1") { currentPage = 1 }; PaginationButton("< Poprzedni") { currentPage-- } }
-                Text(" Strona $currentPage of $maxPage ", color = Color.LightGray, modifier = Modifier.padding(horizontal = 16.dp), fontWeight = FontWeight.Bold)
-                if (currentPage < maxPage) { PaginationButton("Następny >") { currentPage++ }; PaginationButton("$maxPage >>") { currentPage = maxPage } }
+                if (currentPage > 1) { PaginationButton(stringResource(R.string.pagination_first)) { currentPage = 1 }; PaginationButton(stringResource(R.string.pagination_prev)) { currentPage-- } }
+                Text(stringResource(R.string.pagination_page_format, currentPage, maxPage), color = Color.LightGray, modifier = Modifier.padding(horizontal = 16.dp), fontWeight = FontWeight.Bold)
+                if (currentPage < maxPage) { PaginationButton(stringResource(R.string.pagination_next)) { currentPage++ }; PaginationButton(stringResource(R.string.pagination_last, maxPage)) { currentPage = maxPage } }
             }
         }
     }
 
-    if (showSortDialog) SimpleListDialog("Wybierz Sortowanie", MovieScraper.SORT_OPTIONS.keys.toList(), { showSortDialog = false }, { selectedSort = it })
+    if (showSortDialog) {
+        // Display localized values but select corresponding key
+        val keys = MovieScraper.SORT_OPTIONS.keys.toList()
+        val displayValues = keys.map { getSortDisplay(it) }
+        SimpleListDialog(stringResource(R.string.dialog_title_sort), displayValues, { showSortDialog = false }, { selectedDisplay ->
+            val index = displayValues.indexOf(selectedDisplay)
+            if(index != -1) selectedSortKey = keys[index]
+        })
+    }
 
     if (showCategoryDialog) {
-        val categories = listOf("Wszystkie") + (MovieScraper.CATEGORIES.keys - "Wszystkie").sorted()
-        SimpleListDialog("Wybierz Kategorię", categories, { showCategoryDialog = false }, { selectedCategory = it })
+        val allKeys = listOf("Wszystkie") + (MovieScraper.CATEGORIES.keys - "Wszystkie").sorted()
+        val displayValues = allKeys.map { getCategoryDisplay(it) }
+        SimpleListDialog(stringResource(R.string.dialog_title_category), displayValues, { showCategoryDialog = false }, { selectedDisplay ->
+            val index = displayValues.indexOf(selectedDisplay)
+            if(index != -1) selectedCategoryKey = allKeys[index]
+        })
     }
 
     if (showYearDialog) {
-        val ranges = listOf("Wszystkie", "2020-Teraz", "2010-2020", "2000-2010", "1990-2000")
-        SimpleListDialog("Wybierz Rok", ranges, { showYearDialog = false }, { range ->
+        val rangeNow = stringResource(R.string.filter_year_now)
+        val rangeAll = stringResource(R.string.filter_all)
+        val ranges = listOf(rangeAll, rangeNow, "2010-2020", "2000-2010", "1990-2000")
+
+        SimpleListDialog(stringResource(R.string.dialog_title_year), ranges, { showYearDialog = false }, { range ->
             val currentY = Calendar.getInstance().get(Calendar.YEAR)
             when(range) {
-                "Wszystkie" -> { selectedYearFrom = ""; selectedYearTo = "" }
-                "2020-Teraz" -> { selectedYearFrom = "2020"; selectedYearTo = currentY.toString() }
+                rangeAll -> { selectedYearFrom = ""; selectedYearTo = "" }
+                rangeNow -> { selectedYearFrom = "2020"; selectedYearTo = currentY.toString() }
                 "2010-2020" -> { selectedYearFrom = "2010"; selectedYearTo = "2020" }
                 "2000-2010" -> { selectedYearFrom = "2000"; selectedYearTo = "2010" }
                 "1990-2000" -> { selectedYearFrom = "1990"; selectedYearTo = "2000" }

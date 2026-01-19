@@ -32,6 +32,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.Button
 import androidx.tv.material3.ButtonDefaults
@@ -40,10 +41,12 @@ import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import coil.compose.AsyncImage
 import com.github.konradcz2001.kinootv.EpisodeActivity
+import com.github.konradcz2001.kinootv.R
 import com.github.konradcz2001.kinootv.data.EpisodeDetails
 import com.github.konradcz2001.kinootv.data.MovieScraper
 import com.github.konradcz2001.kinootv.ui.components.CommentView
 import com.github.konradcz2001.kinootv.ui.components.PlayerLinkButton
+import com.github.konradcz2001.kinootv.utils.getLocalizedVersionName
 import com.github.konradcz2001.kinootv.utils.sortLinks
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -70,9 +73,7 @@ fun EpisodeScreen(url: String, scope: CoroutineScope) {
             try {
                 val scraper = MovieScraper(context)
                 val data = scraper.fetchEpisodeDetails(url)
-                withContext(Dispatchers.Main) {
-                    details = data
-                }
+                withContext(Dispatchers.Main) { details = data }
             } catch (e: Exception) {
                 Log.e("EpisodeScreen", "Error fetching episode details", e)
             }
@@ -85,50 +86,20 @@ fun EpisodeScreen(url: String, scope: CoroutineScope) {
         }
     } else {
         val d = details!!
-
         Box(modifier = Modifier.fillMaxSize()) {
             if (d.backgroundUrl.isNotEmpty()) {
-                AsyncImage(
-                    model = d.backgroundUrl,
-                    contentDescription = null,
-                    modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Crop,
-                    alpha = 0.3f
-                )
+                AsyncImage(model = d.backgroundUrl, contentDescription = null, modifier = Modifier.fillMaxSize(), contentScale = ContentScale.Crop, alpha = 0.3f)
             }
             Box(modifier = Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.85f)))
 
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 48.dp),
-                contentPadding = PaddingValues(top = 48.dp, bottom = 48.dp)
-            ) {
+            LazyColumn(modifier = Modifier.fillMaxSize().padding(horizontal = 48.dp), contentPadding = PaddingValues(top = 48.dp, bottom = 48.dp)) {
                 item {
-                    Text(
-                        text = d.seriesTitle,
-                        style = MaterialTheme.typography.displayMedium,
-                        color = Color.White
-                    )
-                    Text(
-                        text = d.episodeTitle,
-                        style = MaterialTheme.typography.headlineSmall,
-                        color = Color(0xFFCCCCCC),
-                        modifier = Modifier.padding(top = 8.dp, bottom = 16.dp)
-                    )
+                    Text(text = d.seriesTitle, style = MaterialTheme.typography.displayMedium, color = Color.White)
+                    Text(text = d.episodeTitle, style = MaterialTheme.typography.headlineSmall, color = Color(0xFFCCCCCC), modifier = Modifier.padding(top = 8.dp, bottom = 16.dp))
                 }
-
                 if (d.description.isNotEmpty()) {
-                    item {
-                        Text(
-                            text = d.description,
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = Color(0xFFAAAAAA),
-                            modifier = Modifier.padding(bottom = 24.dp)
-                        )
-                    }
+                    item { Text(text = d.description, style = MaterialTheme.typography.bodyLarge, color = Color(0xFFAAAAAA), modifier = Modifier.padding(bottom = 24.dp)) }
                 }
-
                 item {
                     Row(modifier = Modifier.padding(bottom = 32.dp)) {
                         if (d.prevEpisodeUrl != null) {
@@ -139,17 +110,12 @@ fun EpisodeScreen(url: String, scope: CoroutineScope) {
                                     intent.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
                                     context.startActivity(intent)
                                 },
-                                colors = ButtonDefaults.colors(
-                                    containerColor = Color(0xFF333333),
-                                    contentColor = Color.White,
-                                    focusedContainerColor = Color(0xFFE50914)
-                                )
+                                colors = ButtonDefaults.colors(containerColor = Color(0xFF333333), contentColor = Color.White, focusedContainerColor = Color(0xFFE50914))
                             ) {
-                                Text("<< Poprzedni")
+                                Text(stringResource(R.string.prev_episode))
                             }
                             Spacer(modifier = Modifier.width(16.dp))
                         }
-
                         if (d.nextEpisodeUrl != null) {
                             Button(
                                 onClick = {
@@ -158,13 +124,9 @@ fun EpisodeScreen(url: String, scope: CoroutineScope) {
                                     intent.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
                                     context.startActivity(intent)
                                 },
-                                colors = ButtonDefaults.colors(
-                                    containerColor = Color(0xFF333333),
-                                    contentColor = Color.White,
-                                    focusedContainerColor = Color(0xFFE50914)
-                                )
+                                colors = ButtonDefaults.colors(containerColor = Color(0xFF333333), contentColor = Color.White, focusedContainerColor = Color(0xFFE50914))
                             ) {
-                                Text("Następny >>")
+                                Text(stringResource(R.string.next_episode))
                             }
                         }
                     }
@@ -175,15 +137,17 @@ fun EpisodeScreen(url: String, scope: CoroutineScope) {
 
                 if (groupedLinks.isNotEmpty()) {
                     item {
-                        Text(text = "Odtwarzacze", style = MaterialTheme.typography.headlineSmall, color = Color.White)
+                        Text(text = stringResource(R.string.players_header), style = MaterialTheme.typography.headlineSmall, color = Color.White)
                         Spacer(modifier = Modifier.height(8.dp))
                     }
 
                     groupedLinks.forEach { (versionName, links) ->
                         item {
                             Column {
+                                // Use mapped version name here
+                                val displayVersion = getLocalizedVersionName(versionName, context)
                                 Text(
-                                    text = versionName,
+                                    text = displayVersion,
                                     style = MaterialTheme.typography.titleSmall,
                                     color = Color(0xFFBCAAA4),
                                     modifier = Modifier.padding(top = 12.dp, bottom = 8.dp)
@@ -192,7 +156,10 @@ fun EpisodeScreen(url: String, scope: CoroutineScope) {
                                 LazyRow(
                                     horizontalArrangement = Arrangement.spacedBy(16.dp),
                                     contentPadding = PaddingValues(horizontal = 24.dp, vertical = 16.dp),
-                                    modifier = Modifier.focusProperties { enter = { rowRequester } }
+                                    modifier = Modifier.focusProperties {
+                                        @Suppress("DEPRECATION")
+                                        enter = { rowRequester }
+                                    }
                                 ) {
                                     itemsIndexed(links) { index, link ->
                                         PlayerLinkButton(
@@ -205,18 +172,18 @@ fun EpisodeScreen(url: String, scope: CoroutineScope) {
                         }
                     }
                 } else {
-                    item { Text("Brak dostępnych odtwarzaczy", color = Color.Gray) }
+                    item { Text(stringResource(R.string.no_players), color = Color.Gray) }
                 }
 
                 item { Spacer(modifier = Modifier.height(32.dp)) }
 
                 item {
-                    Text(text = "Komentarze", style = MaterialTheme.typography.headlineSmall, color = Color.White)
+                    Text(text = stringResource(R.string.comments_header), style = MaterialTheme.typography.headlineSmall, color = Color.White)
                     Spacer(modifier = Modifier.height(16.dp))
                 }
 
                 if (d.comments.isEmpty()) {
-                    item { Text("Brak komentarzy", color = Color.Gray) }
+                    item { Text(stringResource(R.string.no_comments), color = Color.Gray) }
                 } else {
                     items(d.comments.size) { index ->
                         CommentView(comment = d.comments[index])

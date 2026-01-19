@@ -35,11 +35,13 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.Text
 import com.github.konradcz2001.kinootv.MainActivity
+import com.github.konradcz2001.kinootv.R
 import com.github.konradcz2001.kinootv.data.Movie
 import com.github.konradcz2001.kinootv.data.MovieScraper
 import com.github.konradcz2001.kinootv.ui.components.FilterButton
@@ -53,16 +55,42 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-/**
- * A screen dedicated to browsing TV series.
- * Supports pagination, sorting by new episodes or popularity, and category filtering.
- */
 @OptIn(ExperimentalTvMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun SerialsScreen() {
     val context = LocalContext.current
-    var selectedSort by remember { mutableStateOf("Nowe Odcinki") }
-    var selectedCategory by remember { mutableStateOf("Wszystkie") }
+
+    // Internal keys (used for scraper logic)
+    var selectedSortKey by remember { mutableStateOf("Nowe Odcinki") }
+    var selectedCategoryKey by remember { mutableStateOf("Wszystkie") }
+
+    // --- MAPPING LOGIC ---
+    val sortMap = mapOf(
+        "Nowe Odcinki" to stringResource(R.string.sort_new_episodes),
+        "Nowe Seriale" to stringResource(R.string.sort_new_serials),
+        "Liczba Głosów" to stringResource(R.string.sort_votes),
+        "Odsłony" to stringResource(R.string.sort_views),
+        "Ocena" to stringResource(R.string.sort_rate)
+    )
+
+    val categoryMap = mapOf(
+        "Wszystkie" to stringResource(R.string.filter_all),
+        "Akcja" to stringResource(R.string.cat_action),
+        "Animacja" to stringResource(R.string.cat_animation),
+        "Czarna Komedia" to stringResource(R.string.cat_black_comedy),
+        "Dla Młodzieży" to stringResource(R.string.cat_youth),
+        "Erotyczny" to stringResource(R.string.cat_erotic),
+        "Familijny" to stringResource(R.string.cat_family),
+        "Horror" to stringResource(R.string.cat_horror),
+        "Komedia" to stringResource(R.string.cat_comedy),
+        "Sci-Fi" to stringResource(R.string.cat_scifi),
+        "Thriller" to stringResource(R.string.cat_thriller)
+    )
+
+    // Helper to get display name from key
+    val getSortDisplay = { key: String -> sortMap[key] ?: key }
+    val getCategoryDisplay = { key: String -> categoryMap[key] ?: key }
+
     var movies by remember { mutableStateOf<List<Movie>>(emptyList()) }
     var maxPage by remember { mutableIntStateOf(1) }
     var currentPage by remember { mutableIntStateOf(1) }
@@ -84,12 +112,12 @@ fun SerialsScreen() {
         }
     }
 
-    LaunchedEffect(currentPage, selectedSort, selectedCategory) {
+    LaunchedEffect(currentPage, selectedSortKey, selectedCategoryKey) {
         isLoading = true
         launch(Dispatchers.IO) {
             try {
                 val scraper = MovieScraper(context)
-                val result = scraper.fetchFilteredSerials(category = selectedCategory, sort = selectedSort, page = currentPage)
+                val result = scraper.fetchFilteredSerials(category = selectedCategoryKey, sort = selectedSortKey, page = currentPage)
                 withContext(Dispatchers.Main) {
                     movies = result.movies
                     maxPage = result.maxPage
@@ -127,9 +155,9 @@ fun SerialsScreen() {
                     .focusProperties { down = firstItemRequester },
                 horizontalArrangement = Arrangement.Center
             ) {
-                FilterButton("Sortowanie: $selectedSort") { showSortDialog = true }
+                FilterButton(stringResource(R.string.sort_label_format, getSortDisplay(selectedSortKey))) { showSortDialog = true }
                 Spacer(modifier = Modifier.width(16.dp))
-                FilterButton("Kategoria: $selectedCategory") { showCategoryDialog = true }
+                FilterButton(stringResource(R.string.category_label_format, getCategoryDisplay(selectedCategoryKey))) { showCategoryDialog = true }
             }
         }
         if (isLoading) {
@@ -137,7 +165,7 @@ fun SerialsScreen() {
                 CircularProgressIndicator(color = Color.Red)
             }
         } else if (movies.isEmpty()) {
-            Box(modifier = Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.Center) { Text("Nie znaleziono seriali", color = Color.Gray) }
+            Box(modifier = Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.Center) { Text(stringResource(R.string.no_serials_found), color = Color.Gray) }
         } else {
             CompositionLocalProvider(LocalBringIntoViewSpec provides bringIntoViewSpec) {
                 LazyVerticalGrid(
@@ -161,17 +189,28 @@ fun SerialsScreen() {
         }
         if (maxPage > 1) {
             Row(modifier = Modifier.fillMaxWidth().padding(16.dp), horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
-                if (currentPage > 1) { PaginationButton("<< 1") { currentPage = 1 }; PaginationButton("< Poprzedni") { currentPage-- } }
-                Text(" Strona $currentPage of $maxPage ", color = Color.LightGray, modifier = Modifier.padding(horizontal = 16.dp), fontWeight = FontWeight.Bold)
-                if (currentPage < maxPage) { PaginationButton("Następny >") { currentPage++ }; PaginationButton("$maxPage >>") { currentPage = maxPage } }
+                if (currentPage > 1) { PaginationButton(stringResource(R.string.pagination_first)) { currentPage = 1 }; PaginationButton(stringResource(R.string.pagination_prev)) { currentPage-- } }
+                Text(stringResource(R.string.pagination_page_format, currentPage, maxPage), color = Color.LightGray, modifier = Modifier.padding(horizontal = 16.dp), fontWeight = FontWeight.Bold)
+                if (currentPage < maxPage) { PaginationButton(stringResource(R.string.pagination_next)) { currentPage++ }; PaginationButton(stringResource(R.string.pagination_last, maxPage)) { currentPage = maxPage } }
             }
         }
     }
 
-    if (showSortDialog) SimpleListDialog("Wybierz Sortowanie", MovieScraper.SORT_OPTIONS_SERIALS.keys.toList(), { showSortDialog = false }, { selectedSort = it })
+    if (showSortDialog) {
+        val keys = MovieScraper.SORT_OPTIONS_SERIALS.keys.toList()
+        val displayValues = keys.map { getSortDisplay(it) }
+        SimpleListDialog(stringResource(R.string.dialog_title_sort), displayValues, { showSortDialog = false }, { selectedDisplay ->
+            val index = displayValues.indexOf(selectedDisplay)
+            if(index != -1) selectedSortKey = keys[index]
+        })
+    }
 
     if (showCategoryDialog) {
-        val categories = listOf("Wszystkie") + (MovieScraper.CATEGORIES.keys - "Wszystkie").sorted()
-        SimpleListDialog("Wybierz Kategorię", categories, { showCategoryDialog = false }, { selectedCategory = it })
+        val allKeys = listOf("Wszystkie") + (MovieScraper.CATEGORIES.keys - "Wszystkie").sorted()
+        val displayValues = allKeys.map { getCategoryDisplay(it) }
+        SimpleListDialog(stringResource(R.string.dialog_title_category), displayValues, { showCategoryDialog = false }, { selectedDisplay ->
+            val index = displayValues.indexOf(selectedDisplay)
+            if(index != -1) selectedCategoryKey = allKeys[index]
+        })
     }
 }

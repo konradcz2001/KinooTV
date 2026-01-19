@@ -38,12 +38,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.key.type
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.LifecycleOwner
+import com.github.konradcz2001.kinootv.R
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstants
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
@@ -70,7 +72,7 @@ fun YouTubePlayerDialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(usePlatformDefaultWidth = false)
     ) {
-        var youTubePlayer by remember { mutableStateOf<YouTubePlayer?>(null) }
+        var YTPlayer by remember { mutableStateOf<YouTubePlayer?>(null) }
 
         // Player State tracking
         var playerState by remember { mutableStateOf(PlayerConstants.PlayerState.UNKNOWN) }
@@ -119,9 +121,9 @@ fun YouTubePlayerDialog(
                             KeyEvent.KEYCODE_NUMPAD_ENTER,
                             KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE -> {
                                 if (playerState == PlayerConstants.PlayerState.PLAYING) {
-                                    youTubePlayer?.pause()
+                                    YTPlayer?.pause()
                                 } else {
-                                    youTubePlayer?.play()
+                                    YTPlayer?.play()
                                 }
                                 return@onKeyEvent true
                             }
@@ -153,7 +155,7 @@ fun YouTubePlayerDialog(
                                     seekJob.value?.cancel()
                                     seekJob.value = coroutineScope.launch {
                                         delay(800)
-                                        youTubePlayer?.seekTo(clampedNewTime)
+                                        YTPlayer?.seekTo(clampedNewTime)
                                         // Optimistic UI update
                                         currentVideoTime = clampedNewTime
                                         delay(1000)
@@ -188,7 +190,7 @@ fun YouTubePlayerDialog(
                                     seekJob.value?.cancel()
                                     seekJob.value = coroutineScope.launch {
                                         delay(800)
-                                        youTubePlayer?.seekTo(clampedNewTime)
+                                        YTPlayer?.seekTo(clampedNewTime)
                                         // Optimistic UI update
                                         currentVideoTime = clampedNewTime
                                         delay(1000)
@@ -222,28 +224,29 @@ fun YouTubePlayerDialog(
         ) {
             // Player Container
             Box(modifier = Modifier.fillMaxSize()) {
+                @Suppress("COMPOSE_APPLIER_CALL_MISMATCH")
                 AndroidView(
                     factory = { ctx ->
                         YouTubePlayerView(ctx).apply {
                             (ctx as? LifecycleOwner)?.lifecycle?.addObserver(this)
                             addYouTubePlayerListener(object : AbstractYouTubePlayerListener() {
-                                override fun onReady(player: YouTubePlayer) {
-                                    youTubePlayer = player
-                                    player.loadVideo(videoId, 0f)
+                                override fun onReady(youTubePlayer: YouTubePlayer) {
+                                    YTPlayer = youTubePlayer
+                                    youTubePlayer.loadVideo(videoId, 0f)
                                 }
 
-                                override fun onCurrentSecond(player: YouTubePlayer, second: Float) {
+                                override fun onCurrentSecond(youTubePlayer: YouTubePlayer, second: Float) {
                                     if (!isSeeking && playerState != PlayerConstants.PlayerState.ENDED) {
                                         currentVideoTime = second
                                     }
                                 }
 
-                                override fun onVideoDuration(player: YouTubePlayer, duration: Float) {
+                                override fun onVideoDuration(youTubePlayer: YouTubePlayer, duration: Float) {
                                     videoDuration = duration
                                 }
 
                                 override fun onStateChange(
-                                    player: YouTubePlayer,
+                                    youTubePlayer: YouTubePlayer,
                                     state: PlayerConstants.PlayerState
                                 ) {
                                     playerState = state
@@ -294,7 +297,7 @@ fun YouTubePlayerDialog(
                 ) {
                     Icon(
                         imageVector = Icons.Default.PlayArrow,
-                        contentDescription = "Odtwórz",
+                        contentDescription = stringResource(R.string.play_button_desc),
                         tint = Color.White,
                         modifier = Modifier.size(64.dp)
                     )
