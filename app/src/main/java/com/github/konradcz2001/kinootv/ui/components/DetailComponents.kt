@@ -32,6 +32,7 @@ import androidx.tv.material3.Text
 import com.github.konradcz2001.kinootv.R
 import com.github.konradcz2001.kinootv.data.Comment
 import com.github.konradcz2001.kinootv.data.PlayerLink
+import com.github.konradcz2001.kinootv.utils.parseAndLocalizeDate
 import org.json.JSONObject
 
 /**
@@ -94,7 +95,7 @@ fun PlayerLinkButton(link: PlayerLink, modifier: Modifier = Modifier) {
 
             if (link.addedDate.isNotEmpty()) {
                 Text(
-                    text = link.addedDate,
+                    text = parseAndLocalizeDate(link.addedDate, context),
                     fontSize = 10.sp,
                     color = Color.Gray.copy(alpha = 0.8f) // Slightly darker for subtitle text
                 )
@@ -110,6 +111,7 @@ fun PlayerLinkButton(link: PlayerLink, modifier: Modifier = Modifier) {
  */
 @Composable
 fun CommentView(comment: Comment) {
+    val context = LocalContext.current
     // Limit indentation depth to prevent UI breaking on deep threads
     val indentLevel = minOf(comment.depth, 20)
     val startPadding = (indentLevel * 20).dp
@@ -122,8 +124,10 @@ fun CommentView(comment: Comment) {
             .background(Color(0xFF1A1A1A), shape = MaterialTheme.shapes.small)
             .padding(12.dp)
     ) {
+        val localizedDate = parseAndLocalizeDate(comment.date, context)
+
         Text(
-            text = "${comment.author}  •  ${comment.date}",
+            text = "${comment.author}  •  $localizedDate",
             style = MaterialTheme.typography.labelMedium,
             fontWeight = FontWeight.Bold,
             color = Color.DarkGray

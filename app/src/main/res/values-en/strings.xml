@@ -102,10 +102,42 @@
     <string name="ver_eng">English</string>
     <string name="ver_other">Other</string>
 
-    <string name="time_format_seconds">%1$s sec. ago</string>
-    <string name="time_format_minutes">%1$s min. ago</string>
-    <string name="time_format_hours">%1$s hr. ago</string>
-    <string name="time_format_days">%1$s days ago</string>
-    <string name="time_yesterday">Yesterday</string>
-    <string name="time_today">Today</string>
+    <string name="time_just_now">just now</string>
+    <string name="time_today">today</string>
+    <string name="time_yesterday">yesterday</string>
+
+    <plurals name="time_seconds_ago">
+        <item quantity="one">1 second ago</item>
+        <item quantity="other">%d seconds ago</item>
+    </plurals>
+
+    <plurals name="time_minutes_ago">
+        <item quantity="one">1 minute ago</item>
+        <item quantity="other">%d minutes ago</item>
+    </plurals>
+
+    <plurals name="time_hours_ago">
+        <item quantity="one">1 hour ago</item>
+        <item quantity="other">%d hours ago</item>
+    </plurals>
+
+    <plurals name="time_days_ago">
+        <item quantity="one">1 day ago</item>
+        <item quantity="other">%d days ago</item>
+    </plurals>
+
+    <plurals name="time_weeks_ago">
+        <item quantity="one">1 week ago</item>
+        <item quantity="other">%d weeks ago</item>
+    </plurals>
+
+    <plurals name="time_months_ago">
+        <item quantity="one">1 month ago</item>
+        <item quantity="other">%d months ago</item>
+    </plurals>
+
+    <plurals name="time_years_ago">
+        <item quantity="one">1 year ago</item>
+        <item quantity="other">%d years ago</item>
+    </plurals>
 </resources>
