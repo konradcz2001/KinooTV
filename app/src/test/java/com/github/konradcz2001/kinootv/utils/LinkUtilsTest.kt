@@ -1,12 +1,19 @@
 package com.github.konradcz2001.kinootv.utils
 
+import android.content.Context
+import android.content.res.Resources
+import com.github.konradcz2001.kinootv.R
 import com.github.konradcz2001.kinootv.data.PlayerLink
 import com.google.common.truth.Truth.assertThat
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
 import org.junit.Test
 
 /**
  * Unit tests for [LinkUtils.kt].
  * Verifies the heuristics for sorting player links based on language version, quality, and host priority.
+ * Also verifies date parsing and localization logic.
  */
 class LinkUtilsTest {
 
@@ -113,8 +120,6 @@ class LinkUtilsTest {
     @Test
     fun `sortLinks sorts tertiarily by Host preference`() {
         // Arrange: Same version, Same quality
-        // Based on logic: compareByDescending { it.hostName.contains("voe") }
-        // true > false, so "voe" should come FIRST if using Descending.
         val linkVoe = createLink(host = "voe.sx", version = "Lektor", quality = "720p")
         val linkOther = createLink(host = "mixdrop", version = "Lektor", quality = "720p")
 
@@ -124,9 +129,6 @@ class LinkUtilsTest {
         val sortedList = sortLinks(unsortedList)
 
         // Assert
-        // If the intention of the code is to prioritize VOE, it should be first.
-        // If the intention was to "downgrade" (as per comment in code), the implementation
-        // using `thenByDescending` actually PROMOTES it. Assuming code behavior is truth:
         assertThat(sortedList).containsExactly(linkVoe, linkOther).inOrder()
     }
 
@@ -143,10 +145,74 @@ class LinkUtilsTest {
         val sorted = sortLinks(unsorted)
 
         // Assert
-        // 1. l3 (PL, 1080p) - Wins on Quality over l2
-        // 2. l2 (PL, 720p)
-        // 3. l1 (Napisy) - Loses on Version
         assertThat(sorted).containsExactly(l3, l2, l1).inOrder()
+    }
+
+    // --- Date Parsing Tests ---
+
+    @Test
+    fun `parseAndLocalizeDate parses implicit singular units correctly (default to 1)`() {
+        // Given
+        val rawDate = "rok temu"
+        val context = mockk<Context>(relaxed = true)
+        val resources = mockk<Resources>(relaxed = true)
+
+        every { context.resources } returns resources
+        every { resources.getQuantityString(R.plurals.time_years_ago, 1, 1) } returns "1 rok temu"
+
+        // When
+        val result = parseAndLocalizeDate(rawDate, context)
+
+        // Then
+        verify { resources.getQuantityString(R.plurals.time_years_ago, 1, 1) }
+        assertThat(result).isEqualTo("1 rok temu")
+    }
+
+    @Test
+    fun `parseAndLocalizeDate parses explicit numbers correctly`() {
+        // Given
+        val rawDate = "5 minut temu"
+        val context = mockk<Context>(relaxed = true)
+        val resources = mockk<Resources>(relaxed = true)
+
+        every { context.resources } returns resources
+        every { resources.getQuantityString(R.plurals.time_minutes_ago, 5, 5) } returns "5 minut temu"
+
+        // When
+        val result = parseAndLocalizeDate(rawDate, context)
+
+        // Then
+        verify { resources.getQuantityString(R.plurals.time_minutes_ago, 5, 5) }
+        assertThat(result).isEqualTo("5 minut temu")
+    }
+
+    @Test
+    fun `parseAndLocalizeDate handles keywords like wczoraj`() {
+        // Given
+        val rawDate = "dodano wczoraj"
+        val context = mockk<Context>(relaxed = true)
+
+        every { context.getString(R.string.time_yesterday) } returns "Wczoraj"
+
+        // When
+        val result = parseAndLocalizeDate(rawDate, context)
+
+        // Then
+        verify { context.getString(R.string.time_yesterday) }
+        assertThat(result).isEqualTo("Wczoraj")
+    }
+
+    @Test
+    fun `parseAndLocalizeDate handles unknown units by returning original string`() {
+        // Given
+        val rawDate = "5 eonów temu"
+        val context = mockk<Context>(relaxed = true)
+
+        // When
+        val result = parseAndLocalizeDate(rawDate, context)
+
+        // Then
+        assertThat(result).isEqualTo("5 eonów temu")
     }
 
     // --- Helper Methods ---

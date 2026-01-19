@@ -61,31 +61,62 @@ fun getLocalizedVersionName(rawVersion: String, context: Context): String {
 }
 
 /**
- * Parses relative time strings (e.g. "10 godzin temu") and returns localized format.
+ * Parses relative time strings (e.g., "10 godzin temu", "rok temu")
+ * and applies proper localized grammar using Plurals resources.
+ * If no number is found but a unit is present, it defaults to 1.
  */
 fun parseAndLocalizeDate(rawDate: String, context: Context): String {
-    // Regex for: Number + Space + Unit + Space + "temu"
-    // e.g. "10 godzin temu"
-    val pattern = Pattern.compile("(\\d+)\\s+(sekund|minut|godzin|dni|tygodni|miesięcy|lat)\\s+temu", Pattern.CASE_INSENSITIVE)
-    val matcher = pattern.matcher(rawDate)
+    val normalized = rawDate.trim().lowercase()
+
+    // 1. Handle specific keywords
+    if (normalized.contains("wczoraj")) return context.getString(R.string.time_yesterday)
+    if (normalized.contains("dzisiaj")) return context.getString(R.string.time_today)
+    if (normalized.contains("chwil")) return context.getString(R.string.time_just_now)
+
+    // 2. Regex with optional number group
+    // Pattern: (Optional Number) + (Unit) + "temu"
+    // (?:(\d+)\s+)? -> Non-capturing group for the number, which is optional (?)
+    // ([a-zA-Ząęćłńóśźż]+) -> The unit (e.g., "godzin", "rok")
+    val pattern = Pattern.compile("(?:(\\d+)\\s+)?([a-zA-Ząęćłńóśźż]+)\\s+temu", Pattern.CASE_INSENSITIVE)
+    val matcher = pattern.matcher(normalized)
 
     if (matcher.find()) {
-        val number = matcher.group(1) ?: ""
+        val countString = matcher.group(1)
         val unit = matcher.group(2)?.lowercase() ?: ""
 
-        val formatResId = when {
-            unit.startsWith("sekund") -> R.string.time_format_seconds
-            unit.startsWith("minut") -> R.string.time_format_minutes
-            unit.startsWith("godzin") -> R.string.time_format_hours
-            unit.startsWith("dni") -> R.string.time_format_days
-            else -> return rawDate // Complex units (weeks/months) left as is for now
+        // Logic: If a number is found, use it. If not (e.g., "rok temu"), default to 1.
+        val count = countString?.toIntOrNull() ?: 1
+
+        val pluralId = when {
+            // Seconds
+            unit.startsWith("sekund") -> R.plurals.time_seconds_ago
+
+            // Minutes (matches "minut", "minuty", "minutę")
+            unit.startsWith("minut") -> R.plurals.time_minutes_ago
+
+            // Hours (matches "godzin", "godziny", "godzinę")
+            unit.startsWith("godzin") -> R.plurals.time_hours_ago
+
+            // Days (matches "dzień", "dni")
+            unit.startsWith("dni") || unit.startsWith("dzie") -> R.plurals.time_days_ago
+
+            // Weeks (matches "tydzień", "tygodnie", "tygodni")
+            unit.startsWith("tygodn") || unit.startsWith("tydzie") -> R.plurals.time_weeks_ago
+
+            // Months (matches "miesiąc", "miesiące", "miesięcy")
+            unit.startsWith("miesi") -> R.plurals.time_months_ago
+
+            // Years (matches "rok", "lata", "lat")
+            unit.startsWith("lat") || unit.startsWith("rok") -> R.plurals.time_years_ago
+
+            else -> return rawDate // Return original if unit is not recognized
         }
-        return context.getString(formatResId, number)
+
+        // Android will automatically pick "one" for count=1, "few"/"many" for others
+        return context.resources.getQuantityString(pluralId, count, count)
     }
 
-    if (rawDate.contains("wczoraj", ignoreCase = true)) return context.getString(R.string.time_yesterday)
-    if (rawDate.contains("dzisiaj", ignoreCase = true)) return context.getString(R.string.time_today)
-
+    // Fallback: if regex doesn't match, return original string
     return rawDate
 }
 
