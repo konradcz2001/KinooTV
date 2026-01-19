@@ -40,7 +40,7 @@ android {
         unitTests.isReturnDefaultValues = true
     }
 
-    // Enable BuildConfig feature (required in newer Android Studio versions)
+    // Enable BuildConfig feature
     buildFeatures {
         compose = true
         buildConfig = true
@@ -87,9 +87,7 @@ android {
             jvmTarget.set(JvmTarget.JVM_21)
         }
     }
-    buildFeatures {
-        compose = true
-    }
+
 }
 
 dependencies {
