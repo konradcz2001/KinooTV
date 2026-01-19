@@ -1,6 +1,5 @@
 package com.github.konradcz2001.kinootv.ui.screens
 
-import android.content.Intent
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
@@ -77,6 +76,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import android.content.Intent
 
 /**
  * Comprehensive details view for a specific movie or TV series.
@@ -297,6 +297,15 @@ fun DetailsScreen(pageUrl: String, scope: CoroutineScope) {
                             }
                         ) {
                             itemsIndexed(currentDetails.seasons) { index, season ->
+                                // Try to parse season number from title (e.g. "Sezon 1" -> 1)
+                                val seasonNumber = Regex("\\d+").find(season.title)?.value?.toIntOrNull()
+
+                                val displayTitle = if (seasonNumber != null) {
+                                    stringResource(R.string.season_number, seasonNumber)
+                                } else {
+                                    season.title // Fallback for "Specials", "OVA" etc.
+                                }
+
                                 Button(
                                     onClick = { selectedSeason = season },
                                     colors = ButtonDefaults.colors(
@@ -305,7 +314,7 @@ fun DetailsScreen(pageUrl: String, scope: CoroutineScope) {
                                     ),
                                     modifier = if (index == 0) Modifier.focusRequester(seasonRowRequester) else Modifier
                                 ) {
-                                    Text(season.title)
+                                    Text(displayTitle)
                                 }
                             }
                         }
@@ -313,7 +322,15 @@ fun DetailsScreen(pageUrl: String, scope: CoroutineScope) {
                         Spacer(modifier = Modifier.height(24.dp))
 
                         if (selectedSeason != null) {
-                            Text(text = stringResource(R.string.episodes_format, selectedSeason!!.title), style = MaterialTheme.typography.titleMedium, color = Color(0xFFCCCCCC))
+                            // Also localize the header "Episodes: Season X"
+                            val seasonNumber = Regex("\\d+").find(selectedSeason!!.title)?.value?.toIntOrNull()
+                            val displayTitle = if (seasonNumber != null) {
+                                stringResource(R.string.season_number, seasonNumber)
+                            } else {
+                                selectedSeason!!.title
+                            }
+
+                            Text(text = stringResource(R.string.episodes_format, displayTitle), style = MaterialTheme.typography.titleMedium, color = Color(0xFFCCCCCC))
                             Spacer(modifier = Modifier.height(8.dp))
                             selectedSeason!!.episodes.forEach { episode ->
                                 Button(

@@ -91,6 +91,8 @@
 
     <string name="play_button_desc">Odtwórz</string>
 
+    <string name="season_number">Sezon %1$d</string>
+
     <string name="ver_pl">Polski</string>
     <string name="ver_dubbing">Dubbing</string>
     <string name="ver_dubbing_cinema">Dubbing (Kino)</string>

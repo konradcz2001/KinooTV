@@ -91,6 +91,8 @@
 
     <string name="play_button_desc">Play</string>
 
+    <string name="season_number">Season %1$d</string>
+
     <string name="ver_pl">Polish</string>
     <string name="ver_dubbing">Dubbing</string>
     <string name="ver_dubbing_cinema">Dubbing (Cinema)</string>
