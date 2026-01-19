@@ -16,8 +16,9 @@
 * **☁ Cloud Synchronizacja:** Lista obserwowanych synchronizowana w czasie rzeczywistym między urządzeniami dzięki **Firebase Realtime Database** (możliwość współpracy z [rozszerzeniem do przeglądarki](https://github.com/konradcz2001/KinooTV-Extention)).
 * **🤖 Smart Scraping:** Automatyczne pobieranie metadanych, plakatów, ocen i opisów bezpośrednio ze strony źródłowej.
 * **⏯️ Player Links:** Agregacja i sortowanie linków wideo (priorytetyzacja: Dubbing PL > Lektor > Napisy).
-* **🌐 Odtwarzanie bez reklam:** Linki przekierowują do zewnętrznej przeglądarki. Dla najlepszych wrażeń zaleca się instalację przeglądarki z funkcją **wykrywania i przechwytywania wideo** (co eliminuje reklamy i pozwala używać natywnego odtwarzacza). Polecane rozwiązanie: **[browser-app.com](https://browser-app.com)**.
+* **🛡️ Odtwarzanie bez reklam:** Linki przekierowują do zewnętrznej przeglądarki. Dla najlepszych wrażeń zaleca się instalację przeglądarki z funkcją **wykrywania i przechwytywania wideo** (co eliminuje reklamy i pozwala używać natywnego odtwarzacza). Polecane rozwiązanie: **[browser-app.com](https://browser-app.com)**.
 * **👶 Tryb Kids:** Dedykowana sekcja z bajkami i animacjami.
+* **🌐 Wsparcie wielojęzyczne:** Interfejs dostępny w języku polskim i angielskim (automatyczne dopasowanie do ustawień systemu).
 
 ## 📸 Screenshots
 
