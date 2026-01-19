@@ -9,9 +9,9 @@
     <string name="menu_serials">SERIALE</string>
     <string name="menu_kids">DZIECI</string>
 
-    <string name="search_hint">Wpisz tytuł...</string>
+    <string name="search_hint">Wpisz tytuł…</string>
     <string name="voice_search_desc">Wyszukiwanie głosowe</string>
-    <string name="voice_search_prompt">Powiedz tytuł...</string>
+    <string name="voice_search_prompt">Powiedz tytuł…</string>
     <string name="voice_search_unavailable">Wyszukiwanie głosowe niedostępne</string>
     <string name="no_results">Brak rezultatów</string>
     <string name="movies_header">FILMY</string>
@@ -62,7 +62,7 @@
     <string name="header_trending_serials">SERIALE NA CZASIE</string>
 
     <string name="error_data_fetch">Błąd pobierania danych</string>
-    <string name="trailer_searching">Szukanie zwiastuna...</string>
+    <string name="trailer_searching">Szukanie zwiastuna…</string>
     <string name="trailer_play_hint">Kliknij aby odtworzyć zwiastun</string>
     <string name="trailer_not_found">Nie znaleziono zwiastuna</string>
     <string name="trailer_fetch_error">Błąd pobierania zwiastuna</string>

@@ -9,9 +9,9 @@
     <string name="menu_serials">TV SERIES</string>
     <string name="menu_kids">KIDS</string>
 
-    <string name="search_hint">Enter title...</string>
+    <string name="search_hint">Enter title…</string>
     <string name="voice_search_desc">Voice search</string>
-    <string name="voice_search_prompt">Say title...</string>
+    <string name="voice_search_prompt">Say title…</string>
     <string name="voice_search_unavailable">Voice search unavailable</string>
     <string name="no_results">No results found</string>
     <string name="movies_header">MOVIES</string>
@@ -62,7 +62,7 @@
     <string name="header_trending_serials">TRENDING TV SERIES</string>
 
     <string name="error_data_fetch">Error fetching data</string>
-    <string name="trailer_searching">Searching for trailer...</string>
+    <string name="trailer_searching">Searching for trailer…</string>
     <string name="trailer_play_hint">Click to play trailer</string>
     <string name="trailer_not_found">Trailer not found</string>
     <string name="trailer_fetch_error">Error fetching trailer</string>
