@@ -29,6 +29,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.platform.LocalContext
 import androidx.tv.material3.Button
 import androidx.tv.material3.ButtonDefaults
 import androidx.tv.material3.Card
@@ -39,6 +40,7 @@ import androidx.tv.material3.Text
 import coil.compose.AsyncImage
 import com.github.konradcz2001.kinootv.data.Movie
 import kotlinx.coroutines.delay
+import com.github.konradcz2001.kinootv.utils.getLocalizedVersionName
 
 /**
  * A shared UI component that displays a hero banner with the movie's backdrop,
@@ -48,6 +50,7 @@ import kotlinx.coroutines.delay
  */
 @Composable
 fun MovieDescriptionBanner(movie: Movie) {
+    val context = LocalContext.current
     Box(modifier = Modifier.fillMaxSize()) {
         AsyncImage(model = movie.imageUrl, contentDescription = null, modifier = Modifier.fillMaxSize().alpha(0.6f), contentScale = ContentScale.Crop)
         // Horizontal gradient (left-to-right) for text readability
@@ -61,7 +64,7 @@ fun MovieDescriptionBanner(movie: Movie) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(text = movie.year, color = Color.LightGray, style = MaterialTheme.typography.bodyMedium)
                 if (movie.rating != null) { Spacer(modifier = Modifier.width(12.dp)); Text(text = "★ ${movie.rating}", color = Color(0xFFB0B0B0), style = MaterialTheme.typography.bodyMedium) }
-                if (movie.qualityLabel != null) { Spacer(modifier = Modifier.width(12.dp)); Text(text = movie.qualityLabel, color = Color.White, fontSize = 11.sp, modifier = Modifier.background(Color.Gray.copy(alpha = 0.5f), shape = MaterialTheme.shapes.small).padding(horizontal = 6.dp, vertical = 2.dp)) }
+                if (movie.qualityLabel != null) { Spacer(modifier = Modifier.width(12.dp)); Text(text = getLocalizedVersionName(movie.qualityLabel, context), color = Color.White, fontSize = 11.sp, modifier = Modifier.background(Color.Gray.copy(alpha = 0.5f), shape = MaterialTheme.shapes.small).padding(horizontal = 6.dp, vertical = 2.dp)) }
             }
             Spacer(modifier = Modifier.height(8.dp))
             Text(text = movie.description, style = MaterialTheme.typography.bodyMedium, color = Color(0xFFBBBBBB), maxLines = 3, overflow = TextOverflow.Ellipsis)

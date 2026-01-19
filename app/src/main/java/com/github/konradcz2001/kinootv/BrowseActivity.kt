@@ -33,6 +33,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
@@ -93,12 +94,12 @@ fun AppLayout() {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
 
     val menuItems = listOf(
-        MenuItemData("SZUKAJ", Icons.Default.Search),
-        MenuItemData("GŁÓWNA", Icons.Default.Home),
-        MenuItemData("OBSERWOWANE", Icons.Default.Visibility),
-        MenuItemData("FILMY", Icons.Default.Movie),
-        MenuItemData("SERIALE", Icons.Default.Tv),
-        MenuItemData("DZIECI", Icons.Default.ChildCare)
+        MenuItemData(stringResource(R.string.menu_search), Icons.Default.Search),
+        MenuItemData(stringResource(R.string.menu_home), Icons.Default.Home),
+        MenuItemData(stringResource(R.string.menu_watchlist), Icons.Default.Visibility),
+        MenuItemData(stringResource(R.string.menu_movies), Icons.Default.Movie),
+        MenuItemData(stringResource(R.string.menu_serials), Icons.Default.Tv),
+        MenuItemData(stringResource(R.string.menu_kids), Icons.Default.ChildCare)
     )
 
     // Focus requesters for menu items
@@ -138,7 +139,7 @@ fun AppLayout() {
                 // 1. TITLE - Positioned at TopStart
                 if (drawerState.currentValue == DrawerValue.Open) {
                     Text(
-                        text = "KINOO TV",
+                        text = stringResource(R.string.app_logo_title),
                         style = MaterialTheme.typography.headlineMedium.copy(
                             fontFamily = CartoonFontFamily,
                             letterSpacing = 2.sp

@@ -47,6 +47,7 @@ import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
@@ -57,6 +58,7 @@ import androidx.tv.material3.IconButton
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import com.github.konradcz2001.kinootv.MainActivity
+import com.github.konradcz2001.kinootv.R
 import com.github.konradcz2001.kinootv.data.Movie
 import com.github.konradcz2001.kinootv.data.MovieScraper
 import com.github.konradcz2001.kinootv.data.SearchResult
@@ -183,10 +185,16 @@ fun SearchScreen() {
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                     keyboardActions = KeyboardActions(onSearch = { performSearch(query) }),
                     singleLine = true,
-                    decorationBox = { innerTextField -> if (query.isEmpty()) Text("Wpisz tytuł...", color = Color.Gray, fontSize = 16.sp); innerTextField() }
+                    decorationBox = { innerTextField ->
+                        if (query.isEmpty()) Text(stringResource(R.string.search_hint), color = Color.Gray, fontSize = 16.sp); innerTextField()
+                    }
                 )
 
                 Spacer(modifier = Modifier.width(8.dp))
+
+                // Variables for resource strings to use inside callback
+                val voicePrompt = stringResource(R.string.voice_search_prompt)
+                val voiceError = stringResource(R.string.voice_search_unavailable)
 
                 IconButton(
                     onClick = {
@@ -194,17 +202,17 @@ fun SearchScreen() {
                             putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
                             putExtra(RecognizerIntent.EXTRA_LANGUAGE, "pl-PL")
                             putExtra(RecognizerIntent.EXTRA_SUPPORTED_LANGUAGES, arrayOf("pl-PL", "en-US"))
-                            putExtra(RecognizerIntent.EXTRA_PROMPT, "Powiedz tytuł...")
+                            putExtra(RecognizerIntent.EXTRA_PROMPT, voicePrompt)
                         }
                         try {
                             voiceLauncher.launch(intent)
                         } catch (_: Exception) {
-                            Toast.makeText(context, "Wyszukiwanie głosowe niedostępne", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, voiceError, Toast.LENGTH_SHORT).show()
                         }
                     },
                     modifier = Modifier.focusRequester(micRequester)
                 ) {
-                    Icon(imageVector = Icons.Default.Mic, contentDescription = "Wyszukiwanie głosowe", tint = Color.LightGray)
+                    Icon(imageVector = Icons.Default.Mic, contentDescription = stringResource(R.string.voice_search_desc), tint = Color.LightGray)
                 }
             }
         }
@@ -213,7 +221,7 @@ fun SearchScreen() {
             val noResults = searchResult!!.movies.isEmpty() && searchResult!!.serials.isEmpty()
             if (noResults) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text("Brak rezultatów", color = Color.Gray)
+                    Text(stringResource(R.string.no_results), color = Color.Gray)
                 }
             } else {
                 CompositionLocalProvider(LocalBringIntoViewSpec provides bringIntoViewSpec) {
@@ -225,7 +233,7 @@ fun SearchScreen() {
                         if (moviesExist) {
                             item(key = "movies_row") {
                                 CategoryRow(
-                                    title = "FILMY",
+                                    title = stringResource(R.string.movies_header),
                                     movies = searchResult!!.movies,
                                     onMovieFocused = { focusedMovie = it },
                                     focusRequester = firstResultRequester
@@ -236,7 +244,7 @@ fun SearchScreen() {
                         if (searchResult!!.serials.isNotEmpty()) {
                             item(key = "serials_row") {
                                 CategoryRow(
-                                    title = "SERIALE",
+                                    title = stringResource(R.string.series_header),
                                     movies = searchResult!!.serials,
                                     onMovieFocused = { focusedMovie = it },
                                     focusRequester = if (!moviesExist) firstResultRequester else null

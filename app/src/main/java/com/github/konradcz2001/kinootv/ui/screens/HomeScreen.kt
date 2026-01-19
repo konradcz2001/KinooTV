@@ -27,8 +27,10 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.github.konradcz2001.kinootv.MainActivity
+import com.github.konradcz2001.kinootv.R
 import com.github.konradcz2001.kinootv.data.Movie
 import com.github.konradcz2001.kinootv.data.MovieScraper
 import com.github.konradcz2001.kinootv.ui.components.CategoryRow
@@ -41,8 +43,6 @@ import kotlinx.coroutines.withContext
 
 /**
  * The main dashboard screen of the application.
- * Fetches and displays horizontal rows of content (e.g., Latest Movies, Popular Series) for easy browsing.
- * Redirects to the Login screen if the session is detected as expired.
  */
 @OptIn(ExperimentalFoundationApi::class)
 @SuppressLint("MutableCollectionMutableState")
@@ -80,7 +80,6 @@ fun HomeScreen() {
                 }
             } catch (_: SessionExpiredException) {
                 withContext(Dispatchers.Main) {
-                    Log.e("HomeScreen", "Session expired! Redirecting to login.")
                     val intent = Intent(context, MainActivity::class.java)
                     intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                     context.startActivity(intent)
@@ -114,8 +113,18 @@ fun HomeScreen() {
                     items(rows!!.entries.toList().size) { index ->
                         val entry = rows!!.entries.toList()[index]
                         val isFirstCategory = (index == 0)
+
+                        // Map the raw header (e.g., "FILMY NA TOPIE") to a localized string resource
+                        val rawTitle = entry.key
+                        val localizedTitle = when {
+                            rawTitle.contains("FILMY NA CZASIE") -> stringResource(R.string.header_trending_movies)
+                            rawTitle.contains("FILMY NA TOPIE") -> stringResource(R.string.header_top_movies)
+                            rawTitle.contains("SERIALE NA CZASIE") -> stringResource(R.string.header_trending_serials)
+                            else -> rawTitle // Fallback
+                        }
+
                         CategoryRow(
-                            title = entry.key,
+                            title = localizedTitle,
                             movies = entry.value,
                             onMovieFocused = { focusedMovie = it },
                             focusRequester = if(isFirstCategory) firstItemRequester else null

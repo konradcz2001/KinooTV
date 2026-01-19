@@ -1,0 +1,111 @@
+<resources>
+    <string name="app_name">Kinoo TV</string>
+    <string name="app_logo_title">KINOO TV</string>
+
+    <string name="menu_search">SEARCH</string>
+    <string name="menu_home">HOME</string>
+    <string name="menu_watchlist">WATCHLIST</string>
+    <string name="menu_movies">MOVIES</string>
+    <string name="menu_serials">TV SERIES</string>
+    <string name="menu_kids">KIDS</string>
+
+    <string name="search_hint">Enter title...</string>
+    <string name="voice_search_desc">Voice search</string>
+    <string name="voice_search_prompt">Say title...</string>
+    <string name="voice_search_unavailable">Voice search unavailable</string>
+    <string name="no_results">No results found</string>
+    <string name="movies_header">MOVIES</string>
+    <string name="series_header">TV SERIES</string>
+
+    <string name="sort_label_format">Sort: %1$s</string>
+    <string name="category_label_format">Category: %1$s</string>
+    <string name="year_label_format">Year: %1$s</string>
+    <string name="no_movies_found">No movies found</string>
+    <string name="no_serials_found">No TV series found</string>
+    <string name="no_kids_found">No cartoons found</string>
+
+    <string name="pagination_first">&lt;&lt; 1</string>
+    <string name="pagination_prev">&lt; Previous</string>
+    <string name="pagination_page_format"> Page %1$d of %2$d </string>
+    <string name="pagination_next">Next &gt;</string>
+    <string name="pagination_last">%1$d &gt;&gt;</string>
+
+    <string name="dialog_title_sort">Select Sort Order</string>
+    <string name="dialog_title_category">Select Category</string>
+    <string name="dialog_title_year">Select Year</string>
+
+    <string name="filter_all">All</string>
+    <string name="filter_year_now">2020-Present</string>
+
+    <string name="cat_action">Action</string>
+    <string name="cat_animation">Animation</string>
+    <string name="cat_black_comedy">Black Comedy</string>
+    <string name="cat_youth">Youth</string>
+    <string name="cat_erotic">Erotic</string>
+    <string name="cat_family">Family</string>
+    <string name="cat_horror">Horror</string>
+    <string name="cat_comedy">Comedy</string>
+    <string name="cat_scifi">Sci-Fi</string>
+    <string name="cat_thriller">Thriller</string>
+
+    <string name="sort_new_links">New Links</string>
+    <string name="sort_votes">Most Voted</string>
+    <string name="sort_premiere">Premiere Date</string>
+    <string name="sort_views">Most Viewed</string>
+    <string name="sort_rate">Rating</string>
+    <string name="sort_filmweb">Filmweb Rating</string>
+    <string name="sort_new_episodes">New Episodes</string>
+    <string name="sort_new_serials">New Series</string>
+
+    <string name="header_trending_movies">TRENDING MOVIES</string>
+    <string name="header_top_movies">TOP MOVIES</string>
+    <string name="header_trending_serials">TRENDING TV SERIES</string>
+
+    <string name="error_data_fetch">Error fetching data</string>
+    <string name="trailer_searching">Searching for trailer...</string>
+    <string name="trailer_play_hint">Click to play trailer</string>
+    <string name="trailer_not_found">Trailer not found</string>
+    <string name="trailer_fetch_error">Error fetching trailer</string>
+    <string name="watchlist_added">Following</string>
+    <string name="watchlist_add">Follow</string>
+    <string name="views_format">Views: %1$s</string>
+    <string name="genres_format">Genres: %1$s</string>
+    <string name="seasons_header">Seasons</string>
+    <string name="episodes_format">Episodes: %1$s</string>
+    <string name="players_header">Players</string>
+    <string name="no_players">No players available</string>
+    <string name="comments_header">Comments</string>
+    <string name="no_comments">No comments</string>
+    <string name="error_no_player_app">No player app found</string>
+    <string name="error_open_link">Error opening link</string>
+
+    <string name="fallback_no_title">No title</string>
+    <string name="fallback_no_desc">No description</string>
+    <string name="fallback_season_default">Season</string>
+    <string name="fallback_version_other">Other</string>
+
+    <string name="watchlist_empty">Watchlist is empty</string>
+
+    <string name="prev_episode">&lt;&lt; Previous</string>
+    <string name="next_episode">Next &gt;&gt;</string>
+
+    <string name="play_button_desc">Play</string>
+
+    <string name="ver_pl">Polish</string>
+    <string name="ver_dubbing">Dubbing</string>
+    <string name="ver_dubbing_cinema">Dubbing (Cinema)</string>
+    <string name="ver_lector">Voiceover</string>
+    <string name="ver_lector_ai">AI Voiceover</string>
+    <string name="ver_lector_ivo">IVO Voiceover</string>
+    <string name="ver_subtitles">Subtitles</string>
+    <string name="ver_subtitles_transl">Subtitles (Transl.)</string>
+    <string name="ver_eng">English</string>
+    <string name="ver_other">Other</string>
+
+    <string name="time_format_seconds">%1$s sec. ago</string>
+    <string name="time_format_minutes">%1$s min. ago</string>
+    <string name="time_format_hours">%1$s hr. ago</string>
+    <string name="time_format_days">%1$s days ago</string>
+    <string name="time_yesterday">Yesterday</string>
+    <string name="time_today">Today</string>
+</resources>

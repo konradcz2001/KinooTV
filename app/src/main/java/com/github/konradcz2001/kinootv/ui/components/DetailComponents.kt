@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -28,6 +29,7 @@ import androidx.tv.material3.ButtonDefaults
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
+import com.github.konradcz2001.kinootv.R
 import com.github.konradcz2001.kinootv.data.Comment
 import com.github.konradcz2001.kinootv.data.PlayerLink
 import org.json.JSONObject
@@ -43,6 +45,9 @@ import org.json.JSONObject
 @Composable
 fun PlayerLinkButton(link: PlayerLink, modifier: Modifier = Modifier) {
     val context = LocalContext.current
+
+    val errorNoPlayerApp = stringResource(R.string.error_no_player_app)
+    val errorOpenLink = stringResource(R.string.error_open_link)
 
     Button(
         onClick = {
@@ -63,12 +68,12 @@ fun PlayerLinkButton(link: PlayerLink, modifier: Modifier = Modifier) {
                 try {
                     context.startActivity(browserIntent)
                 } catch (_: ActivityNotFoundException) {
-                    Toast.makeText(context, "Nie znaleziono aplikacji do odtwarzania", Toast.LENGTH_LONG).show()
+                    Toast.makeText(context, errorNoPlayerApp, Toast.LENGTH_LONG).show()
                 }
 
             } catch (e: Exception) {
                 Log.e("PlayerLink", "Error opening link", e)
-                Toast.makeText(context, "Błąd otwarcia linku", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, errorOpenLink, Toast.LENGTH_SHORT).show()
             }
         },
         modifier = modifier,

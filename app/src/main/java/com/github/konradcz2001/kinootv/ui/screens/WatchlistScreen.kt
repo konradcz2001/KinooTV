@@ -26,10 +26,12 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
+import com.github.konradcz2001.kinootv.R
 import com.github.konradcz2001.kinootv.data.Movie
 import com.github.konradcz2001.kinootv.ui.components.CategoryRow
 import com.github.konradcz2001.kinootv.ui.components.MovieDescriptionBanner
@@ -83,19 +85,22 @@ fun WatchlistScreen() {
 
         if (watchlist.isEmpty()) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text("Brak obserwowanych", color = Color.Gray, style = MaterialTheme.typography.headlineSmall)
+                Text(stringResource(R.string.watchlist_empty), color = Color.Gray, style = MaterialTheme.typography.headlineSmall)
             }
         } else {
             CompositionLocalProvider(LocalBringIntoViewSpec provides bringIntoViewSpec) {
                 val rowRequester = remember { FocusRequester() }
                 LazyColumn(
                     contentPadding = PaddingValues(bottom = 220.dp),
-                    modifier = Modifier.fillMaxSize().focusProperties { enter = { rowRequester } }
+                    modifier = Modifier.fillMaxSize().focusProperties {
+                        @Suppress("DEPRECATION")
+                        enter = { rowRequester }
+                    }
                 ) {
                     if (movies.isNotEmpty()) {
                         item {
                             CategoryRow(
-                                title = "FILMY",
+                                title = stringResource(R.string.movies_header),
                                 movies = movies,
                                 onMovieFocused = { focusedMovie = it },
                                 focusRequester = firstItemRequester
@@ -105,7 +110,7 @@ fun WatchlistScreen() {
                     if (serials.isNotEmpty()) {
                         item {
                             CategoryRow(
-                                title = "SERIALE",
+                                title = stringResource(R.string.series_header),
                                 movies = serials,
                                 onMovieFocused = { focusedMovie = it },
                                 focusRequester = if (movies.isEmpty()) firstItemRequester else null
