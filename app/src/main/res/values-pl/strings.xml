@@ -1,0 +1,157 @@
+<resources>
+    <string name="app_name">Kinoo TV</string>
+    <string name="app_logo_title">KINOO TV</string>
+
+    <string name="menu_search">SZUKAJ</string>
+    <string name="menu_home">GŁÓWNA</string>
+    <string name="menu_watchlist">OBSERWOWANE</string>
+    <string name="menu_movies">FILMY</string>
+    <string name="menu_serials">SERIALE</string>
+    <string name="menu_kids">DZIECI</string>
+
+    <string name="search_hint">Wpisz tytuł...</string>
+    <string name="voice_search_desc">Wyszukiwanie głosowe</string>
+    <string name="voice_search_prompt">Powiedz tytuł...</string>
+    <string name="voice_search_unavailable">Wyszukiwanie głosowe niedostępne</string>
+    <string name="no_results">Brak rezultatów</string>
+    <string name="movies_header">FILMY</string>
+    <string name="series_header">SERIALE</string>
+
+    <string name="sort_label_format">Sortowanie: %1$s</string>
+    <string name="category_label_format">Kategoria: %1$s</string>
+    <string name="year_label_format">Rok: %1$s</string>
+    <string name="no_movies_found">Nie znaleziono filmów</string>
+    <string name="no_serials_found">Nie znaleziono seriali</string>
+    <string name="no_kids_found">Nie znaleziono bajek</string>
+
+    <string name="pagination_first">&lt;&lt; 1</string>
+    <string name="pagination_prev">&lt; Poprzedni</string>
+    <string name="pagination_page_format"> Strona %1$d z %2$d </string>
+    <string name="pagination_next">Następny &gt;</string>
+    <string name="pagination_last">%1$d &gt;&gt;</string>
+
+    <string name="dialog_title_sort">Wybierz Sortowanie</string>
+    <string name="dialog_title_category">Wybierz Kategorię</string>
+    <string name="dialog_title_year">Wybierz Rok</string>
+
+    <string name="filter_all">Wszystkie</string>
+    <string name="filter_year_now">2020-Teraz</string>
+
+    <string name="cat_action">Akcja</string>
+    <string name="cat_animation">Animacja</string>
+    <string name="cat_black_comedy">Czarna Komedia</string>
+    <string name="cat_youth">Dla Młodzieży</string>
+    <string name="cat_erotic">Erotyczny</string>
+    <string name="cat_family">Familijny</string>
+    <string name="cat_horror">Horror</string>
+    <string name="cat_comedy">Komedia</string>
+    <string name="cat_scifi">Sci-Fi</string>
+    <string name="cat_thriller">Thriller</string>
+
+    <string name="sort_new_links">Nowe Linki</string>
+    <string name="sort_votes">Liczba Głosów</string>
+    <string name="sort_premiere">Premiera</string>
+    <string name="sort_views">Odsłony</string>
+    <string name="sort_rate">Ocena</string>
+    <string name="sort_filmweb">Ocena Filmweb</string>
+    <string name="sort_new_episodes">Nowe Odcinki</string>
+    <string name="sort_new_serials">Nowe Seriale</string>
+
+    <string name="header_trending_movies">FILMY NA CZASIE</string>
+    <string name="header_top_movies">FILMY NA TOPIE</string>
+    <string name="header_trending_serials">SERIALE NA CZASIE</string>
+
+    <string name="error_data_fetch">Błąd pobierania danych</string>
+    <string name="trailer_searching">Szukanie zwiastuna...</string>
+    <string name="trailer_play_hint">Kliknij aby odtworzyć zwiastun</string>
+    <string name="trailer_not_found">Nie znaleziono zwiastuna</string>
+    <string name="trailer_fetch_error">Błąd pobierania zwiastuna</string>
+    <string name="watchlist_added">Obserwuję</string>
+    <string name="watchlist_add">Obserwuj</string>
+    <string name="views_format">Wyświetlenia: %1$s</string>
+    <string name="genres_format">Gatunki: %1$s</string>
+    <string name="seasons_header">Sezony</string>
+    <string name="episodes_format">Odcinki: %1$s</string>
+    <string name="players_header">Odtwarzacze</string>
+    <string name="no_players">Brak dostępnych odtwarzaczy</string>
+    <string name="comments_header">Komentarze</string>
+    <string name="no_comments">Brak komentarzy</string>
+    <string name="error_no_player_app">Nie znaleziono aplikacji do odtwarzania</string>
+    <string name="error_open_link">Błąd otwarcia linku</string>
+
+    <string name="fallback_no_title">Brak tytułu</string>
+    <string name="fallback_no_desc">Brak opisu</string>
+    <string name="fallback_season_default">Sezon</string>
+    <string name="fallback_version_other">Inne</string>
+
+    <string name="watchlist_empty">Brak obserwowanych</string>
+
+    <string name="prev_episode">&lt;&lt; Poprzedni</string>
+    <string name="next_episode">Następny &gt;&gt;</string>
+
+    <string name="play_button_desc">Odtwórz</string>
+
+    <string name="ver_pl">Polski</string>
+    <string name="ver_dubbing">Dubbing</string>
+    <string name="ver_dubbing_cinema">Dubbing (Kino)</string>
+    <string name="ver_lector">Lektor</string>
+    <string name="ver_lector_ai">Lektor AI</string>
+    <string name="ver_lector_ivo">Lektor IVO</string>
+    <string name="ver_subtitles">Napisy</string>
+    <string name="ver_subtitles_transl">Napisy (Tłumacz)</string>
+    <string name="ver_eng">Angielski</string>
+    <string name="ver_other">Inne</string>
+
+    <string name="time_just_now">przed chwilą</string>
+    <string name="time_today">dzisiaj</string>
+    <string name="time_yesterday">wczoraj</string>
+
+    <plurals name="time_seconds_ago">
+        <item quantity="one">%d sekundę temu</item>
+        <item quantity="few">%d sekundy temu</item>
+        <item quantity="many">%d sekund temu</item>
+        <item quantity="other">%d sekund temu</item>
+    </plurals>
+
+    <plurals name="time_minutes_ago">
+        <item quantity="one">%d minutę temu</item>
+        <item quantity="few">%d minuty temu</item>
+        <item quantity="many">%d minut temu</item>
+        <item quantity="other">%d minut temu</item>
+    </plurals>
+
+    <plurals name="time_hours_ago">
+        <item quantity="one">%d godzinę temu</item>
+        <item quantity="few">%d godziny temu</item>
+        <item quantity="many">%d godzin temu</item>
+        <item quantity="other">%d godzin temu</item>
+    </plurals>
+
+    <plurals name="time_days_ago">
+        <item quantity="one">%d dzień temu</item>
+        <item quantity="few">%d dni temu</item>
+        <item quantity="many">%d dni temu</item>
+        <item quantity="other">%d dni temu</item>
+    </plurals>
+
+    <plurals name="time_weeks_ago">
+        <item quantity="one">%d tydzień temu</item>
+        <item quantity="few">%d tygodnie temu</item>
+        <item quantity="many">%d tygodni temu</item>
+        <item quantity="other">%d tygodni temu</item>
+    </plurals>
+
+    <plurals name="time_months_ago">
+        <item quantity="one">%d miesiąc temu</item>
+        <item quantity="few">%d miesiące temu</item>
+        <item quantity="many">%d miesięcy temu</item>
+        <item quantity="other">%d miesięcy temu</item>
+    </plurals>
+
+    <plurals name="time_years_ago">
+        <item quantity="one">%d rok temu</item>
+        <item quantity="few">%d lata temu</item>
+        <item quantity="many">%d lat temu</item>
+        <item quantity="other">%d lat temu</item>
+    </plurals>
+</resources>
