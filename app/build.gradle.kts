@@ -34,6 +34,7 @@ android {
         // Retrieve data from secrets.properties
         buildConfigField("String", "FIREBASE_LOGIN", getSecret("FIREBASE_LOGIN"))
         buildConfigField("String", "FIREBASE_PASSWORD", getSecret("FIREBASE_PASSWORD"))
+        buildConfigField("String", "YOUTUBE_API_KEY", getSecret("YOUTUBE_API_KEY"))
     }
 
     testOptions {
