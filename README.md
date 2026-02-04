@@ -80,17 +80,17 @@ Aplikacja wykorzystuje sprawdzone biblioteki i wzorce architektoniczne:
 
 1. **Sklonuj repozytorium**
 2. **Konfiguracja Firebase:**
-   * Stwórz w konsoli Firebase Realtime Database.
-   * Dodaj do opcji uwierzytelniania urzytkownika z emailem i hasłem.
-   * W zasadach bazy danych dodaj temu urzytkownikowi uprawnienia dostępu (odczyt i zapis).
-   * Pobierz `google-services.json` ze swojej konsoli Firebase.
-   * Umieść plik w katalogu `app/src/GoogleTV` lub `app/src/FireTV`.
+    * Stwórz w konsoli Firebase Realtime Database.
+    * Dodaj do opcji uwierzytelniania urzytkownika z emailem i hasłem.
+    * W zasadach bazy danych dodaj temu urzytkownikowi uprawnienia dostępu (odczyt i zapis).
+    * Pobierz `google-services.json` ze swojej konsoli Firebase.
+    * Umieść plik w katalogu `app/src/GoogleTV` lub `app/src/FireTV`.
 3. **Sekrety i Zmienne:**
-   * Aplikacja wymaga zdefiniowania poświadczeń w `secrets.properties`.
-   * Wymagane pola: `FIREBASE_LOGIN`, `FIREBASE_PASSWORD`(uwierzytelnianie użytkownika Realtime Database) , `GOOGLE_TV_APP_LOGIN`, `GOOGLE_TV_APP_PASSWORD` (dane logowania do serwisu źródłowego), `GOOGLE_TV_DB_URL` (link do bazy danych Firebase) lub analogicznie zamiast GOOGLE_TV można podać FIRE_TV.
+    * Aplikacja wymaga zdefiniowania poświadczeń w `secrets.properties`.
+    * Wymagane pola: `FIREBASE_LOGIN`, `FIREBASE_PASSWORD`(uwierzytelnianie użytkownika Realtime Database) , `GOOGLE_TV_APP_LOGIN`, `GOOGLE_TV_APP_PASSWORD` (dane logowania do serwisu źródłowego), `GOOGLE_TV_DB_URL` (link do bazy danych Firebase) lub analogicznie zamiast GOOGLE_TV można podać FIRE_TV, `YOUTUBE_API_KEY` (Klucz API YouTube Data v3 wymagany do odtwarzania zwiastunów).
 4. **Budowanie:**
-   * Wybierz wariant `GoogleTV` lub `FireTV` w zakładce Build Variants.
-   * Uruchom na emulatorze Android TV (API 28+).
+    * Wybierz wariant `GoogleTV` lub `FireTV` w zakładce Build Variants.
+    * Uruchom na emulatorze Android TV (API 28+).
 
 ## ⚠️ Disclaimer (Nota Prawna)
 
@@ -104,4 +104,3 @@ Projekt został stworzony wyłącznie w celach edukacyjnych, aby zademonstrować
 ## 📄 Licencja
 
 Ten projekt jest udostępniony na licencji MIT - zobacz plik [LICENSE](LICENSE) po więcej szczegółów.
-
