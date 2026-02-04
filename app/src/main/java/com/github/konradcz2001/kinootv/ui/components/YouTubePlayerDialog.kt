@@ -38,6 +38,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.key.type
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -49,6 +50,7 @@ import com.github.konradcz2001.kinootv.R
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstants
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.options.IFramePlayerOptions
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -72,6 +74,9 @@ fun YouTubePlayerDialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(usePlatformDefaultWidth = false)
     ) {
+        // Capture context for IFramePlayerOptions builder
+        val context = LocalContext.current
+
         var YTPlayer by remember { mutableStateOf<YouTubePlayer?>(null) }
 
         // Player State tracking
@@ -229,7 +234,17 @@ fun YouTubePlayerDialog(
                     factory = { ctx ->
                         YouTubePlayerView(ctx).apply {
                             (ctx as? LifecycleOwner)?.lifecycle?.addObserver(this)
-                            addYouTubePlayerListener(object : AbstractYouTubePlayerListener() {
+
+                            enableAutomaticInitialization = false
+
+                            val options = IFramePlayerOptions.Builder(context)
+                                .controls(0)
+                                .rel(0)
+                                .ivLoadPolicy(3)
+                                .ccLoadPolicy(0)
+                                .build()
+
+                            initialize(object : AbstractYouTubePlayerListener() {
                                 override fun onReady(youTubePlayer: YouTubePlayer) {
                                     YTPlayer = youTubePlayer
                                     youTubePlayer.loadVideo(videoId, 0f)
@@ -254,7 +269,7 @@ fun YouTubePlayerDialog(
                                         currentVideoTime = videoDuration
                                     }
                                 }
-                            })
+                            }, options)
                         }
                     },
                     modifier = Modifier.fillMaxSize()
