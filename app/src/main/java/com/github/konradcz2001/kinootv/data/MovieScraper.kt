@@ -3,12 +3,14 @@ package com.github.konradcz2001.kinootv.data
 import android.content.Context
 import android.util.Log
 import androidx.core.content.edit
+import com.github.konradcz2001.kinootv.BuildConfig
 import com.github.konradcz2001.kinootv.R
 import com.github.konradcz2001.kinootv.utils.AppConstants
 import com.github.konradcz2001.kinootv.utils.SessionExpiredException
 import com.github.konradcz2001.kinootv.utils.parseAndLocalizeDate
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import org.json.JSONObject
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
@@ -98,12 +100,21 @@ class MovieScraper(private val context: Context) {
     }
 
     /**
-     * Searches YouTube for a trailer ID based on a query string.
+     * Searches YouTube for a trailer ID using the official Data API v3.
      */
     fun getYouTubeTrailerId(query: String): String? {
+        val apiKey = BuildConfig.YOUTUBE_API_KEY
+
+        if (apiKey.isEmpty()) {
+            Log.e("MovieScraper", "YouTube API Key is missing in secrets.properties")
+            return null
+        }
+
         try {
             val encodedQuery = URLEncoder.encode(query, "UTF-8")
-            val url = "https://www.youtube.com/results?search_query=$encodedQuery"
+            // Fetch minimal data: id only, type video, 1 result
+            val url = "https://www.googleapis.com/youtube/v3/search?part=id&q=$encodedQuery&type=video&maxResults=1&key=$apiKey"
+
             val request = Request.Builder()
                 .url(url)
                 // Use a desktop User-Agent to ensure standard HTML response
@@ -111,16 +122,23 @@ class MovieScraper(private val context: Context) {
                 .build()
 
             val response = client.newCall(request).execute()
-            val html = response.body.string()
-            // Regex to extract the first videoId from the JSON data inside HTML
-            val pattern = Pattern.compile("\"videoId\":\"([a-zA-Z0-9_-]{11})\"")
-            val matcher = pattern.matcher(html)
 
-            if (matcher.find()) {
-                return matcher.group(1)
+            if (!response.isSuccessful) {
+                Log.e("MovieScraper", "YouTube API Error: ${response.code}")
+                return null
+            }
+
+            val jsonString = response.body.string()
+            val jsonObject = JSONObject(jsonString)
+            val items = jsonObject.optJSONArray("items")
+
+            if (items != null && items.length() > 0) {
+                val firstItem = items.getJSONObject(0)
+                val idObject = firstItem.optJSONObject("id")
+                return idObject?.optString("videoId")
             }
         } catch (e: Exception) {
-            Log.e("MovieScraper", "Error searching for trailer", e)
+            Log.e("MovieScraper", "Error searching for trailer via API", e)
         }
         return null
     }

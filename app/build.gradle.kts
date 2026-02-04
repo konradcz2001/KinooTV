@@ -28,12 +28,13 @@ android {
         applicationId = "com.github.konradcz2001.kinootv"
         minSdk = 28
         targetSdk = 36
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 2
+        versionName = "1.1"
 
         // Retrieve data from secrets.properties
         buildConfigField("String", "FIREBASE_LOGIN", getSecret("FIREBASE_LOGIN"))
         buildConfigField("String", "FIREBASE_PASSWORD", getSecret("FIREBASE_PASSWORD"))
+        buildConfigField("String", "YOUTUBE_API_KEY", getSecret("YOUTUBE_API_KEY"))
     }
 
     testOptions {
